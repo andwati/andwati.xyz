@@ -1,6 +1,6 @@
-title = "Ian Andwati"
-description = "Ian's website."
-base_url = "https://andwati.github.io"
+title = "mockingspectre"
+description = "mockingspectre"
+base_url = "https://andwati.xyz"
 minify_html = true
 compile_sass = true
 generate_feeds = true
