@@ -1,7 +1,7 @@
 +++
 title = "What say you?"
 description = "Adding a comment system by utterances"
-author = "Ian Andwati"
+author = "mockingspectre"
 date = 2023-08-24T15:34:14.160Z
 [taxonomies]
 tags = ["blog", "utterances"]
@@ -9,7 +9,7 @@ tags = ["blog", "utterances"]
 
 Free speech enhanced
 
-<!-- more -->
+
 
 There is no point in writing online if your readers cannot provide feedback for your writings. You might as well be shouting at a void. My ideal commenting system has to be free, open source and should not be a hassle to setup. Luckily, [utterances 🔮](https://github.com/utterance/utterances) checks all of these conditions
 

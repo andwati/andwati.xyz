@@ -1,7 +1,7 @@
 +++
 title = "A Fresh Coat Of Paint"
 description = "Migrating to Zola"
-author = "Ian Andwati"
+author = "mockigspectre"
 date = 2023-08-24
 [taxonomies]
 tags = ["zola", "blog", "tera", "rust"]
@@ -9,7 +9,6 @@ tags = ["zola", "blog", "tera", "rust"]
 
 Using Zola as my preferred static site generator
 
-<!-- more -->
 After using Hugo for over eight months I got tired of it and looked for other alternatives. That's when I stumbled upon Zola. Zola is a static site generator (SSG), similar to [Hugo](https://gohugo.io/), [Pelican](https://blog.getpelican.com/), and [Jekyll](https://jekyllrb.com/).
 
 It is written in Rust and uses the Tera template engine, similar to Jinja2, Django templates, Liquid, and Twig. SSGs use dynamic templates to transform content into static HTML pages. Static sites are thus very fast and require no databases, making them easy to host.
@@ -55,4 +54,4 @@ I improved on it by adding an archive page, pagination, a comment system, and Go
 
 The site is a work in progress and is far from polished. I plan on implementing a newsletter to notify readers of new posts. The site is primarily a dark theme, in the future I'll also add theme toggling and maybe different palettes.
 
-You can subscribe to the site's RSS feed at [https://andwati.github.io/rss.xml](https://andwati.github.io/rss.xml).
+You can subscribe to the site's RSS feed at [https://andwati.xyz/rss.xml](https://andwati.xyz/rss.xml).

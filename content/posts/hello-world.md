@@ -2,14 +2,14 @@
 title = "Hello World"
 description = "Hello world"
 date = 2022-11-04
-author = "Ian Andwati"
+author = "mockingspectre"
 [taxonomies]
 tags = ["hugo", "blog", "go"]
 +++
 
 How it begins
 
-<!-- more -->
+
 
 In this post-web2.0 age, people seem to blog less and less, and blogs seem to be dying slowly. People are separated in different Apps where the content is not searchable by search engines.
 

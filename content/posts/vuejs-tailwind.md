@@ -1,14 +1,13 @@
 +++
 title = "Configure Vue.js app With Tailwind CSS"
 description = "Tailwindcss in vuejs "
-author = "Ian Andwati"
+author = "mockingspectre"
 date = 2021-06-12
 [taxonomies]
 tags = ["javascript", "vuejs" , "tailwindcss"]
 +++
 A guide on how to use [Tailwind CSS](https://tailwindcss.com/) in your Vue project.
 
-<!-- more -->
 
 >**Note**  
 > This article was originaly published on my old  medium blog. I moved it here for archival purposes. 

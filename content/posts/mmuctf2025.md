@@ -19,7 +19,7 @@ This was a sanity check flag. I believe competitions pose such challenges that y
 
 The challenge description talked about the `door`, my first instinct was to view the source of the front page. I got this html comment with what looked liked a base64 encoded string `<!--bW11Y3Rme3dlbGNvbWVfZmxhZ19hZGlvc19NdWNoQGNob30= -->`
 
-```terminal
+```zsh
 ┌──(mockingspectre㉿blackout)-[~/ctf/mmuctf2025]
 └─$ echo -n "bW11Y3Rme3dlbGNvbWVfZmxhZ19hZGlvc19NdWNoQGNob30=" | base64 -d
 mmuctf{welcome_flag_adios_Much@cho}   
@@ -32,7 +32,7 @@ mmuctf{welcome_flag_adios_Much@cho}
 
 This was a web challenge with an account creation form. Let's fire up Burp. The account creation request didn't seem suspicious for now, so I sent it to the repeater to abuse it some more. The response seemed interesting, the user id was in the query parameter: `GET /profile.php?id=5 HTTP/1.1`. This was a nice candidate for an Insecure Direct Object Reference(IDOR). I tried repeating the request with values from 0-4. The flag was at 1, the admin user's account.
 
-```text
+```txt
 mmuctf{1d0r_4dm1n_4cc3ss_1s_c0mpr0m1s3d}
 ```
 
@@ -43,7 +43,7 @@ mmuctf{1d0r_4dm1n_4cc3ss_1s_c0mpr0m1s3d}
 
 This was a simple one, I knew what the challenge wanted, but I couldn't get myself to exploit it, definitely a skill issue. The webapp had a landing page that had a button that made this request:
 
-```text
+```txt
 GET /portal/jump.php?url=https://example.com HTTP/1.1
 Host: redacted
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0
@@ -70,7 +70,7 @@ A sentence might look normal, but if you copy it into a text editor that shows U
 
 I used these online decoders, <https://wulfsige.com/crypto/> and <https://holloway.nz/steg/> to get the flag:
 
-```text
+```txt
 mmuctf{oops_twitter_steg_1s_fun}
 ```
 
@@ -82,7 +82,7 @@ Can you reveal what lurks in the shadow?
 
 This was another stego challenge; there is an image with what looks like a color palette. The description hints at 'numerical essence', so it might be something to deal with the hex values of the colors. I used this site <https://imagecolorpicker.com/> to extract the hex values.
 
-```text
+```txt
 #6d6d75
 #637466
 #7b346c
@@ -97,7 +97,7 @@ This was another stego challenge; there is an image with what looks like a color
 
 Decoded becomes
 
-```text
+```txt
 mmuctf{4lw4y5_h1dd3n_1n5d3_m3}
 ```
 
@@ -108,13 +108,13 @@ mmuctf{4lw4y5_h1dd3n_1n5d3_m3}
 
 The provided file is an ELF executable binary.
 
-```sh
+```zsh
 ┌──(mockingspectre㉿blackout)-[~/ctf/mmuctf2025]
 └─$ file revealme
 revealme: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=d8546bb2c10c0226384fb2771684af9bc150b55e, for GNU/Linux 3.2.0, stripped
 ```
 
-```console
+```zsh
 ┌──(mockingspectre㉿blackout)-[~/ctf/mmuctf2025]
 └─$ checksec --file=revealme
 RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH      Symbols         FORTIFY Fortified       Fortifiable     FILE
@@ -172,7 +172,7 @@ Opening it with Binary Ninja gives us a quick win:
 
 Flag:
 
-```text
+```txt
 mmuctf{r3v3rs1ng_st4rt3r}
 ```
 
@@ -183,14 +183,14 @@ mmuctf{r3v3rs1ng_st4rt3r}
 
 The provided app is an Android APK. Let's fire up jadx-gui. The package name is `com.example.blink`. There is an interesting class `r2d2`. In the onCreate method, there is an image string variable that seems to contain base64 image data.
 
-```terminal
+```zsh
 ┌──(mockingspectre㉿blackout)-[~/ctf/mmuctf2025]
 └─$ cat output.txt | base64 -d > decoded_image.png
 ```
 
 flag:
 
-```text
+```txt
 CTF{PUCKMAN}
 ```
 
@@ -202,7 +202,7 @@ Some people still think locks are optional on digital doors.*
 
 The provided file was a network capture pcap file. For people who don't know, pcap (a packet capture) consists of an application programming interface (API) for capturing network traffic.The challenge title and filename hint at unencrypted traffic. Open up Wireshark and apply an HTTP filter. There is an HTTP stream that leaks the flag:
 
-```text
+```txt
 mmuctf{plaintext_login_leak}
 ```
 
@@ -229,21 +229,21 @@ Interrupts happen whenever you press a key or click a button, anything that "int
 
 Creating a filter to list all interrupt communication with non-empty 8 bytes
 
-```text
+```txt
 usb.transfer_type == 0x01
 ```
 
-```text
+```txt
 usb.transfer_type == 0x01 && usb.dst == "host" && !(usb.capdata == 00:00:00:00:00:00:00:00)
 ```
 
-Crafting a tshark command to get the leftover capture data for the above filters and redirect it into a text file
+Crafting a tshark command to get the leftover capture data for the above filters and redirect it into a  file
 
-```text
+```zsh
 tshark -r log.pcap -Tfields -Eseparator=, -e thekey.pcapng -Y 'usb.transfer_type == 0x01 && usb.dst == "host" && !(usb.capdata == 00:00:00:00:00:00:00:00)' | sed 's/://g' > usb.capdata
 ```
 
-```terminal
+```zsh
 ┌──(mockingspectre㉿blackout)-[~/ctf/mmuctf2025]
 └─$ tshark -r thekey.pcapng -Tfields -Eseparator=, -e usb.capdata -Y 'usb.transfer_type == 0x01 && usb.dst == "host" && !(usb.capdata == 00:00:00:00:00:00:00:00)' | sed 's/://g' > usb.capdata
                                                                                                              
@@ -289,7 +289,7 @@ with open("usb.capdata") as file:
 
 Running the code outputs what seems to be Vim motions. I wasn't able to decipher this to a correct flag:
 
-```text
+```txt
 v
 i
 m

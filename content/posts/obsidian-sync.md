@@ -1,7 +1,7 @@
 +++
 title = "Setting up Obsidian sync in Windows"
 description = "Syncing Obsidian in Windows with Windows Task Scheduler with git"
-author = "Ian Andwati"
+author = "mockingspectre"
 date = 2023-10-01
 [taxonomies]
 tags = ["obsidian", "git","sync", "windows", "cron", "task scheduler", "powershell"]
@@ -9,7 +9,7 @@ tags = ["obsidian", "git","sync", "windows", "cron", "task scheduler", "powershe
 
 Syncing Obsidian in Windows with Windows Task Scheduler and git
 
-<!-- more -->
+
 
 [Obsidian](https://obsidian.md/) is a powerful note-taking and knowledge management tool that has gained a dedicated following among researchers, writers, and knowledge workers. To make the most of Obsidian, it's essential to keep your notes synchronized across devices and ensure your data is regularly backed up.Obsidian is the private and flexible writing app that adapts to the way you think.
 

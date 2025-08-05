@@ -1,7 +1,7 @@
 +++
 title = "Linux Permissions"
 description = "no you can't do that says root"
-author = "Ian Andwati"
+author = "mockingspectre"
 date = 2025-01-27
 draft=true
 [taxonomies]

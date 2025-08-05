@@ -2,14 +2,14 @@
 title= "Semantic Versioning(SemVer) and Conventional  Commits"
 description = "Adopting best practices in your git and build workflows."
 date= 2023-01-24T15:34:14.160Z
-author = "Ian Andwati"
+author = "mockingspectre"
 [taxonomies]
 tags= ["git", "semver","workflow", "conventional commits"]
 +++
 
 Adopting best practices in your git and build workflows.
 
-<!-- more -->
+
 
 # W﻿hat is Semver?
 
