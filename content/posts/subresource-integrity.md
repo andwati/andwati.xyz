@@ -9,8 +9,6 @@ tags= ["subresource integrity", "csp", "cors"]
 
 Understanding Subresource Integrity
 
-
-
 In my junior year while I was learning HTML and CSS I got to use the Bootstrap css library.The easiest way to obtain the files was from a Content Delivery Network(CDN). I could see links such as:
 
 ```html

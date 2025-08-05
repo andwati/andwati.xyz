@@ -9,8 +9,6 @@ tags= ["git", "semver","workflow", "conventional commits"]
 
 Adopting best practices in your git and build workflows.
 
-
-
 # W﻿hat is Semver?
 
 Semantic versioning or just SemVer is a dependency naming guidline that aims to bring some sanity into naming libraries and packages in software development. It is a standard versioning system created by **Tom Preston Werner** (co-founder of Github) that’s used to communicate what changes are in a release.
@@ -85,5 +83,5 @@ The commit contains the following structural elements, to communicate intent to 
 
 # Resources
 
-https://semver.org/
-https://www.conventionalcommits.org/en/v1.0.0/
+<https://semver.org/>
+<https://www.conventionalcommits.org/en/v1.0.0/>

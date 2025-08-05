@@ -72,7 +72,7 @@ You can switch to the PostgreSQL user by executing the following command:
 
 Before PostgreSQL can function correctly, the database cluster must be initialized.
 
-### 2.1 We can confirm the installed PostgreSQL version by running:
+### 2.1 We can confirm the installed PostgreSQL version by running
 
 ```sh
 postgres --version                                                                           ─╯
@@ -102,7 +102,7 @@ You must first log in as the **postgres** user using the following command bef
 sudo su - postgres
 ```
 
-### 2.5 With the following command, you can now initialize PostgreSQL’s data directory:
+### 2.5 With the following command, you can now initialize PostgreSQL’s data directory
 
 ```sh
 [postgres]$ initdb -D /var/lib/postgres/data
@@ -110,7 +110,7 @@ sudo su - postgres
 
 ### Step 3: PostgreSQL Service Management
 
-### 3.1 Check PostgreSQL status with the following command:
+### 3.1 Check PostgreSQL status with the following command
 
 ```sh
 systemctl status postgresql                                                                  ─╯
@@ -119,19 +119,19 @@ systemctl status postgresql                                                     
      Active: inactive (dead)
 ```
 
-### 3.2 Start the PostgreSQL service by running the following command:
+### 3.2 Start the PostgreSQL service by running the following command
 
 ```sh
 sudo systemctl start postgresql
 ```
 
-### 3.3 Enable the PostgreSQL service to start automatically at boot by running the following command:
+### 3.3 Enable the PostgreSQL service to start automatically at boot by running the following command
 
 ```sh
 sudo systemctl enable postgresql
 ```
 
-### 3.4 Verify that PostgreSQL is running by running the following command:
+### 3.4 Verify that PostgreSQL is running by running the following command
 
 ```sh
 sudo systemctl status postgresql                                                             ─╯

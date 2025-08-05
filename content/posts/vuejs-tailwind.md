@@ -8,20 +8,21 @@ tags = ["javascript", "vuejs" , "tailwindcss"]
 +++
 A guide on how to use [Tailwind CSS](https://tailwindcss.com/) in your Vue project.
 
-
 >**Note**  
-> This article was originaly published on my old  medium blog. I moved it here for archival purposes. 
+> This article was originaly published on my old  medium blog. I moved it here for archival purposes.
 
 Tailwind is a utility-first CSS framework for rapidly building custom user interfaces. It is an un-opinionated framework which means that it doesn't come with custom configurations like Bootstrap or Bulma(Yeah, I know, no one should tell you how to live your life).
 
 Now let's get to the juicy part that brought us all here. I'll assume that we are using Vue 3 and the Vue CLI is already installed.
 
 ## Create a new Vue project
+
 Open a terminal window and type the following commands to create a new Vue project in the current directory.
 
 ```sh
 vue create vue-app
 ```
+
 wait for the dependencies installation to finish then
 
 ```sh
@@ -37,6 +38,7 @@ npm install -D tailwindcss@latest postcss@latest autoprefixer@latest
 ```
 
 ## Create your configuration files
+
 Next, generate your `tailwind.config.js` and `postcss.config.js` files:
 
 ```sh
@@ -73,6 +75,7 @@ module.exports = {
 ```
 
 ## Configure Tailwind to remove unused styles in production
+
 In your tailwind.config.js file, configure the purge option with the paths to all of your pages and components so Tailwind can tree-shake unused styles in production builds:
 
 ```js
@@ -91,6 +94,7 @@ In your tailwind.config.js file, configure the purge option with the paths to al
 ```
 
 ## Include Tailwind in your CSS
+
 Navigate to `src/assets/css` and create a new `tailwind.css` file in the folder, and use the @tailwind directive to include Tailwind’s base, components, and utilities styles in the file.
 
 ```css
@@ -103,6 +107,7 @@ Navigate to `src/assets/css` and create a new `tailwind.css` file in the folder,
 Tailwind will swap these directives out at build-time with all of the styles it generates based on your configured design system.
 
 ## Import Tailwind into your Vue app
+
 Finally, ensure your CSS file is being imported in your `./src/main.js` file:
 
 ```js
@@ -115,4 +120,3 @@ createApp(App).mount('#app')
 ```
 
 You're finished! Now when you run npm run dev, Tailwind CSS will be ready to use in your Vue app! You can now proceed to create awesome stuff
-

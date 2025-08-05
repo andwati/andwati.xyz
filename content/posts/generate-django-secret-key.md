@@ -9,8 +9,6 @@ tags = ["tutorial", "django", "python", ".env"]
 
 Managing the Django SECRET_KEY variable.
 
-
-
 The Django `SECRET_KEY` variable is very crucial to your Django application. The secret key must be a large random value and it must be kept secret. Leaking this value to unauthorized people could lead to a security breach. The SECRET_KEY is used in Django for cryptographic signing. It is used to generate tokens and hashes, they can be recreated using this variable. If it is not configured Django throws a `django.core.exceptions.ImproperlyConfigured: The SECRET_KEY setting must not be empty` error
 
 # Using Environment Variables

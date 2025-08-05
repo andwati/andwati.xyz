@@ -9,8 +9,6 @@ tags = ["obsidian", "git","sync", "windows", "cron", "task scheduler", "powershe
 
 Syncing Obsidian in Windows with Windows Task Scheduler and git
 
-
-
 [Obsidian](https://obsidian.md/) is a powerful note-taking and knowledge management tool that has gained a dedicated following among researchers, writers, and knowledge workers. To make the most of Obsidian, it's essential to keep your notes synchronized across devices and ensure your data is regularly backed up.Obsidian is the private and flexible writing app that adapts to the way you think.
 
 Obsidian is free for personal use.It does not charge based on features or usage.You only pay if you use Obsidian commercially.

@@ -9,8 +9,6 @@ tags =  ["blog", "hugo", "netlify","netlify-cms","github"]
 
 Migrating to a better content management system through Netlify CMS
 
-
-
 # Heavy Lifting
 
 I use [Visual Studio Code](https://code.visualstudio.com/) to manually edit the blog post content on this website. This is quite a hassle because I have to deal with

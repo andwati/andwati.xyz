@@ -9,8 +9,6 @@ tags = ["blog", "utterances"]
 
 Free speech enhanced
 
-
-
 There is no point in writing online if your readers cannot provide feedback for your writings. You might as well be shouting at a void. My ideal commenting system has to be free, open source and should not be a hassle to setup. Luckily, [utterances 🔮](https://github.com/utterance/utterances) checks all of these conditions
 
 It is a lightweight comments widget built on GitHub issues. Use GitHub issues for blog comments, wiki pages and more! The notable features are:
