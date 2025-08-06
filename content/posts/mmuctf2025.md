@@ -28,7 +28,6 @@ mmuctf{welcome_flag_adios_Much@cho}
 ## My First App
 
 >Our intern dev swears this app’s secure...
-{: .prompt-info}
 
 This was a web challenge with an account creation form. Let's fire up Burp. The account creation request didn't seem suspicious for now, so I sent it to the repeater to abuse it some more. The response seemed interesting, the user id was in the query parameter: `GET /profile.php?id=5 HTTP/1.1`. This was a nice candidate for an Insecure Direct Object Reference(IDOR). I tried repeating the request with values from 0-4. The flag was at 1, the admin user's account.
 
@@ -39,7 +38,6 @@ mmuctf{1d0r_4dm1n_4cc3ss_1s_c0mpr0m1s3d}
 ## Ledilect
 
 >Sometimes the path you take is just a jump away.
-{: .prompt-info}
 
 This was a simple one, I knew what the challenge wanted, but I couldn't get myself to exploit it, definitely a skill issue. The webapp had a landing page that had a button that made this request:
 
@@ -62,7 +60,6 @@ Looking at that, I suspected an open redirect vulnerability, but I don't know an
 ## Meet my X
 
 >Iｎ tｈｅ�days оｆ cοｍfoｒt ｉ ｍeｔ tｈis ｇｉrl ａｔ thｅ Ｊobleｓs соrｎｅr. Аt ｔｈe�doоrs ａnd windows of iddleness i approached, oops she smiled and thats how i knew she was the one. I guess thatsss whyyy i learned on getting Flags because be warned she later left me at first it feels like a green flag i guess no life was there on blood(heart_break)
-{: .prompt-info}
 
 This challenge involved homoglyphs,  a character or a sequence of characters that looks very similar or identical to another character or sequence of characters, but has a different meaning, encoding, or origin.
 
@@ -78,7 +75,6 @@ mmuctf{oops_twitter_steg_1s_fun}
 
 >Look beyond the appearance, perhaps their numerical essence will guide you to the flag.
 Can you reveal what lurks in the shadow?
-{: .prompt-info}
 
 This was another stego challenge; there is an image with what looks like a color palette. The description hints at 'numerical essence', so it might be something to deal with the hex values of the colors. I used this site <https://imagecolorpicker.com/> to extract the hex values.
 
@@ -104,7 +100,6 @@ mmuctf{4lw4y5_h1dd3n_1n5d3_m3}
 ## Revealme
 
 >We found this mysterious executable on an old USB stick... Can you figure out how to get it to reveal the flag?
-{: .prompt-info}
 
 The provided file is an ELF executable binary.
 
@@ -179,7 +174,6 @@ mmuctf{r3v3rs1ng_st4rt3r}
 ## Flicker
 
 >An ordinary looking Android app... or is it?
-{: .prompt-info}
 
 The provided app is an Android APK. Let's fire up jadx-gui. The package name is `com.example.blink`. There is an interesting class `r2d2`. In the onCreate method, there is an image string variable that seems to contain base64 image data.
 
@@ -198,7 +192,6 @@ CTF{PUCKMAN}
 
 >Someone trusted the wrong site and network didn’t forget. Can you piece together what was left behind?
 Some people still think locks are optional on digital doors.*
-{: .prompt-info}
 
 The provided file was a network capture pcap file. For people who don't know, pcap (a packet capture) consists of an application programming interface (API) for capturing network traffic.The challenge title and filename hint at unencrypted traffic. Open up Wireshark and apply an HTTP filter. There is an HTTP stream that leaks the flag:
 
@@ -209,7 +202,6 @@ mmuctf{plaintext_login_leak}
 ## C-x C-s
 
 > Ugh, I keep typing ^x ^s in my shell instead of saving, should’ve stuck with Emacs
-{: .prompt-info}
 
 This one made me mad. I thought I had the flag, but I couldn't get it. The provided file is a PCAP file. Another network forensics challenge, or so I thought.
 
