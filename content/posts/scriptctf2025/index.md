@@ -1,13 +1,11 @@
 +++
-title = "ScriptCTF 2025 – Challenge Writeup"
-description = "ScriptCTF 2025 – Challenge Writeup"
+title = "ScriptCTF 2025 Writeup"
+description = "ScriptCTF 2025 Writeup"
 author = "mockingspectre"
 date = 2025-08-18
 [taxonomies]
 tags = ["ctf", "rev", "web", "forensics"]
 +++
-
-# ScriptCTF 2025 – Challenge Writeup
 
 ![][image1]  
 Over the weekend, I participated in ScriptCTF, a capture-the-flag competition packed with diverse challenges spanning cryptography, forensics, reverse engineering, and web exploitation. 
