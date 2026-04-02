@@ -1,36 +1,162 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
 
-{# Override base title to use the page-specific title. #}
-{% block title %}{{ page.title }}{% endblock title %}
+{% block title %}{{ page.title }} | {{ config.title }}{% endblock title %}
+{% block description %}{{ page.description | default(value=config.description) }}{% endblock description %}
+{% block canonical %}{{ page.permalink }}{% endblock canonical %}
 
-{# Override base meta tags to use page-specific ones. #}
-{% block meta %}
-  <meta name="description" content="{{ page.description }}">
-  <meta property="og:site_name" content="andwati.github.io">
-  <meta property="og:locale" content="en-us">
-  <meta property="og:url" content="{{ page.permalink }}">
-  <meta property="og:title" content="{{ page.title }}">
-  <meta property="og:description" content="{{ page.description }}">
-  <meta property="og:image" content="https://andwati.github.io/self.webp">
-  <meta property="twitter:card" content="summary">
-  <meta property="twitter:site" content="@andwati_">
-  <meta property="twitter:title" content="{{ page.title }}">
-  <meta property="twitter:description" content="{{ page.description }}">
-  <meta property="twitter:image" content="https://andwati.github.io/self.webp">
-{% endblock meta %}
+{# Open Graph overrides for article pages #}
+{% block og_title %}{{ page.title }}{% endblock og_title %}
+{% block og_description %}{{ page.description | default(value=config.description) }}{% endblock og_description %}
+{% block og_url %}{{ page.permalink }}{% endblock og_url %}
+{% block og_type %}article{% endblock og_type %}
+{% block og_extra %}
+  {% if page.date %}<meta property="article:published_time" content="{{ page.date | date(format="%+") }}">{% endif %}
+  {% if page.updated %}<meta property="article:modified_time" content="{{ page.updated | date(format="%+") }}">{% endif %}
+  <meta property="article:author" content="{{ config.extra.author | default(value="mockingspectre") }}">
+  {% if page.taxonomies.tags %}
+    {% for tag in page.taxonomies.tags %}
+    <meta property="article:tag" content="{{ tag }}">
+    {% endfor %}
+  {% endif %}
+{% endblock og_extra %}
 
-{# Override base links to use page-specific ones. #}
-{% block links %}
-  <link rel="canonical" href="{{ page.permalink }}">
-{% endblock links %}
+{# Twitter Card overrides #}
+{% block twitter_title %}{{ page.title }}{% endblock twitter_title %}
+{% block twitter_description %}{{ page.description | default(value=config.description) }}{% endblock twitter_description %}
 
-{# Override base content to use page-specific content. #}
+{% block head %}
+  <!-- SEO: BlogPosting JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": "{{ page.permalink }}#article",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "{{ page.permalink }}"
+    },
+    "headline": {{ page.title | json_encode }},
+    "description": {{ page.description | default(value=config.description) | json_encode }},
+    "url": "{{ page.permalink }}",
+    "inLanguage": "en-US",
+    {% if page.date %}"datePublished": "{{ page.date | date(format="%+") }}",{% endif %}
+    {% if page.updated %}"dateModified": "{{ page.updated | date(format="%+") }}",{% else %}{% if page.date %}"dateModified": "{{ page.date | date(format="%+") }}",{% endif %}{% endif %}
+    "author": {
+      "@type": "Person",
+      "@id": "{{ config.base_url }}/#author",
+      "name": "{{ config.extra.author | default(value="mockingspectre") }}",
+      "url": "{{ config.base_url }}/about/"
+    },
+    "publisher": {
+      "@type": "Person",
+      "@id": "{{ config.base_url }}/#author",
+      "name": "{{ config.extra.author | default(value="mockingspectre") }}",
+      "url": "{{ config.base_url }}/about/"
+    },
+    "isPartOf": {
+      "@type": "Blog",
+      "@id": "{{ config.base_url }}/#blog",
+      "name": "{{ config.title }}",
+      "url": "{{ config.base_url }}/"
+    }
+    {% if page.taxonomies.tags %}
+    ,"keywords": [{% for tag in page.taxonomies.tags %}"{{ tag }}"{% if not loop.last %},{% endif %}{% endfor %}]
+    {% endif %}
+  }
+  </script>
+
+  {% if page.extra.math %}
+  <link rel="stylesheet" href="{{ get_url(path="css/katex/katex.min.css") }}">
+  <script defer src="{{ get_url(path="js/katex/katex.min.js") }}"></script>
+  <script defer src="{{ get_url(path="js/katex/auto-render.min.js") }}"
+      onload="renderMathInElement(document.body);"></script>
+  {% endif %}
+
+  {% if page.extra.mermaid %}
+  <script type="module">
+    import mermaid from '{{ get_url(path="js/mermaid.min.js") }}';
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+  </script>
+  {% endif %}
+
+  <!-- Reading Progress Bar -->
+  <script defer src="{{ get_url(path="js/progress.js") }}"></script>
+
+  <!-- Footnote backlinks -->
+  <script defer src="{{ get_url(path="js/footnotes.js") }}"></script>
+
+  <!-- Heading anchor links -->
+  <script defer src="{{ get_url(path="js/heading-anchors.js") }}"></script>
+
+  <!-- Sticky TOC active-section highlighting -->
+  {% if page.toc %}
+  <script defer src="{{ get_url(path="js/toc.js") }}"></script>
+  {% endif %}
+
+{% endblock head %}
+
+
 {% block content %}
-  <main id="content">
-    <header>
-      <h1>{{ page.title }}</h1>
+<div class="reading-progress-container" aria-hidden="true">
+  <div class="reading-progress-bar" id="reading-progress-bar"></div>
+</div>
+
+<div class="post-layout">
+<article class="post-detail">
+    <header class="post-header">
+        <h1 class="post-title">{{ page.title }}</h1>
+        <div class="post-meta">
+            {% if page.date %}
+            <span class="post-meta-item">
+                <span class="post-meta-label">Posted</span>
+                <time datetime="{{ page.date }}">{{ page.date | date(format="%B %e, %Y") }}</time>
+            </span>
+            {% endif %}
+            {% if page.updated and page.updated != page.date %}
+            <span class="post-meta-sep" aria-hidden="true">·</span>
+            <span class="post-meta-item post-meta-updated">
+                <span class="post-meta-label">Updated</span>
+                <time datetime="{{ page.updated }}">{{ page.updated | date(format="%B %e, %Y") }}</time>
+            </span>
+            {% endif %}
+            {% if page.reading_time %}
+            <span class="post-meta-sep" aria-hidden="true">·</span>
+            <span class="post-meta-item">
+                {{ page.reading_time }} min read
+            </span>
+            {% endif %}
+        </div>
     </header>
-    {{ page.content | safe }}
-  </main>
-  {% include "_partials/footer.html" %}
+
+    {% include "partials/series-nav.html" %}
+
+    {% include "partials/toc.html" %}
+
+    <div class="post-body">
+        {{ page.content | safe }}
+    </div>
+
+    {% include "partials/post-nav.html" %}
+
+    {% include "partials/related-posts.html" %}
+
+    <footer class="post-footer">
+        <div class="post-tags-share">
+            <div class="post-tags">
+                {% if page.taxonomies.tags %}
+                    {% for tag in page.taxonomies.tags %}
+                        <span class="tag">#{{ tag }}</span>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            {% include "partials/social-share.html" %}
+        </div>
+
+        <!-- Utterances comments (posts only) -->
+        {% include "partials/comments.html" %}
+    </footer>
+</article>
+
+{% include "partials/toc-sidebar.html" %}
+</div>
 {% endblock content %}

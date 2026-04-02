@@ -1,4 +1,4 @@
 +++
-sort_by = "date"
-template= "archive.html"
+title = "Archive"
+template = "archive.html"
 +++

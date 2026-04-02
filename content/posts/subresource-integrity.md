@@ -1,10 +1,10 @@
 +++
-title= "Subresource Integrity"
+title = "Subresource Integrity"
 description = "Understanding Subresource Integrity"
-date= 2023-04-29
+date = 2023-04-29
 author = "mockingspectre"
 [taxonomies]
-tags= ["subresource integrity", "csp", "cors"]
+tags = ["subresource integrity", "csp", "cors"]
 +++
 
 Understanding Subresource Integrity
@@ -43,10 +43,7 @@ Using Subresource Integrity (SRI) involves a few steps, but it is relatively str
 - Add the hash as an attribute to the tag that loads the external resource. For example, for a JavaScript file, you would add the integrity attribute to the `<script>` tag like this:
 
 ```html
-<script
-  src="https://example.com/example.js"
-  integrity="sha256-ABC123XYZ456"
-></script>
+<script src="https://example.com/example.js" integrity="sha256-ABC123XYZ456"></script>
 ```
 
 > An integrity value may contain multiple hashes separated by whitespace. A resource will be loaded if it matches one of those hashes.

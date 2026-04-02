@@ -1,0 +1,81 @@
+base_url = "https://andwati.xyz"
+title = "Thoughts and Musings"
+description = "Hacking the Narrative, One Byte at a Time."
+compile_sass = true
+minify_html = true
+build_search_index = true
+taxonomies = [{ name = "tags" }]
+generate_feeds = true
+feed_filenames = ["rss.xml", "feed.json"]
+generate_robots_txt = true
+
+[markdown]
+external_links_target_blank = true
+external_links_no_referrer = true
+lazy_async_image = true
+
+[markdown.highlighting]
+theme = "catppuccin-mocha"
+
+[extra]
+# Analytics
+google_analytics = "G-9XLTKZF07C"
+google_site_verification = ""
+
+# Author Information
+author = "mockingspectre"
+
+# Profile Section (Homepage)
+show_profile = true
+avatar_url = "/images/avatar.webp"
+profile_subtitle = "offending binaries"
+
+# Social Links
+github_url = "https://github.com/andwati"
+twitter_url = "https://twitter.com/andwati_"
+youtube_url = "https://www.youtube.com/@pwnforfunandprofit"
+linkedin_url = ""
+email = "andwatiian@gmail.com"
+
+# Comments (Utterances)
+enable_comments = true
+utterances_repo = "andwati/andwati.xyz"
+utterances_theme = "github-dark"
+
+# Navigation Menu
+[[extra.menu]]
+name = "About"
+url = "/about/"
+[[extra.menu]]
+name = "Posts"
+url = "/posts"
+[[extra.menu]]
+name = "Tags"
+url = "/tags/"
+[[extra.menu]]
+name = "Archive"
+url = "@/archive/_index.md"
+
+# Features
+enable_search = true
+enable_theme_toggle = true
+show_rss_link = true
+
+# Social meta
+twitter_handle = "@andwati_"
+
+# Homepage
+homepage_post_limit = 3
+view_all_posts_label = "View all posts"
+
+# Related posts
+related_posts_limit = 3
+related_posts_title = "Related Posts"
+
+# Search
+search_placeholder = "Search posts..."
+
+# 404 terminal identity
+terminal_hostname = "pwnbox"
+terminal_prompt_user = "user@blackout"
+terminal_whoami = "l0st_r3ader"

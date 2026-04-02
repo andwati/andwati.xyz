@@ -1,0 +1,12 @@
+name = "andwati"
+compatibility_date = "2026-04-2"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+
+[build]
+command = "./build.sh"
+
+[assets]
+directory = "./public"

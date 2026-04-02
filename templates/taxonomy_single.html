@@ -1,0 +1,77 @@
+{% extends "base.html" %} {% block title %}Tag: {{ term.name }} | {{ config.title }}{% endblock
+title %} {% block description %}Posts tagged "{{ term.name }}" on {{ config.title }}{% endblock
+description %} {% block canonical %}{{ term.permalink }}{% endblock canonical %} {% block og_title
+%}Tag: {{ term.name }} | {{ config.title }}{% endblock og_title %} {% block og_description %}Posts
+tagged "{{ term.name }}" on {{ config.title }}{% endblock og_description %} {% block og_url %}{{
+term.permalink }}{% endblock og_url %} {% block head %}
+<!-- SEO: Tag CollectionPage JSON-LD -->
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": "{{ term.permalink }}#collection",
+    "name": "Posts tagged \"{{ term.name }}\" | {{ config.title }}",
+    "description": "Posts tagged \"{{ term.name }}\" on {{ config.title }}",
+    "url": "{{ term.permalink }}",
+    "inLanguage": "en-US",
+    "isPartOf": {
+      "@type": "WebSite",
+      "@id": "{{ config.base_url }}/#website"
+    },
+    "hasPart": [
+      {% for page in term.pages %}
+      {
+        "@type": "BlogPosting",
+        "@id": "{{ page.permalink }}#article",
+        "headline": {{ page.title | json_encode }},
+        "url": "{{ page.permalink }}"
+        {% if page.date %},"datePublished": "{{ page.date | date(format="%+") }}"{% endif %}
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ]
+  }
+</script>
+{% endblock head %} {% block content %}
+<div class="post-detail">
+  <header class="post-header" style="margin-bottom: 3rem">
+    <h1 class="post-title" style="font-size: clamp(2rem, 4vw, 3.5rem)">
+      <span style="color: var(--text-muted)">#</span>{{ term.name }}
+    </h1>
+  </header>
+
+  <div class="archive-list" style="max-width: 65ch; margin: 0 auto">
+    <div class="archive">
+      <ul
+        style="
+          list-style-type: none;
+          padding-left: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        "
+      >
+        {% for page in term.pages %}
+        <li class="hover-scale" style="display: flex; gap: 1rem; align-items: baseline">
+          <time
+            datetime="{{ page.date }}"
+            style="
+              color: var(--text-muted);
+              font-size: 0.95rem;
+              white-space: nowrap;
+              font-family: var(--font-mono);
+            "
+            >{{ page.date | date(format="%d-%b") }}</time
+          >
+          <a
+            href="{{ page.permalink }}"
+            style="color: var(--accent-color); font-weight: 500; font-size: 1.05rem"
+            >{{ page.title }}</a
+          >
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock content %}

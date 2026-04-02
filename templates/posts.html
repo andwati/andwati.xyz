@@ -1,14 +1,169 @@
-{% extends "section.html" %}
-{% import "post_macros.html" as post_macros %}
+{% extends "base.html" %} {% block title %}Posts{% if paginator.current_index > 1 %} — Page {{
+paginator.current_index }}{% endif %} | {{ config.title }}{% endblock title %} {% block description
+%}Browse all posts on {{ config.title }} — binary exploitation, reverse engineering, and offensive
+security.{% endblock description %} {% block canonical %}{% if paginator.current_index == 1 %}{{
+config.base_url }}/posts/{% else %}{{ paginator.first }}page/{{ paginator.current_index }}/{% endif
+%}{% endblock canonical %} {% block og_title %}Posts{% if paginator.current_index > 1 %} — Page {{
+paginator.current_index }}{% endif %} | {{ config.title }}{% endblock og_title %} {% block
+og_description %}Browse all posts on {{ config.title }} — binary exploitation, reverse engineering,
+and offensive security.{% endblock og_description %} {% block og_url %}{% if paginator.current_index
+== 1 %}{{ config.base_url }}/posts/{% else %}{{ paginator.first }}page/{{ paginator.current_index
+}}/{% endif %}{% endblock og_url %} {% block head %}
+<!-- SEO: CollectionPage JSON-LD -->
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": "{{ config.base_url }}/posts/#collection",
+    "name": "Posts | {{ config.title }}",
+    "description": "Browse all posts on {{ config.title }}",
+    "url": "{{ config.base_url }}/posts/",
+    "inLanguage": "en-US",
+    "isPartOf": {
+      "@type": "WebSite",
+      "@id": "{{ config.base_url }}/#website"
+    },
+    "hasPart": [
+      {% for page in paginator.pages %}
+      {
+        "@type": "BlogPosting",
+        "@id": "{{ page.permalink }}#article",
+        "headline": {{ page.title | json_encode }},
+        "url": "{{ page.permalink }}"
+        {% if page.date %},"datePublished": "{{ page.date | date(format="%+") }}"{% endif %}
+      }{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ]
+  }
+</script>
 
-{% block content %}
-  <main id="content">
-    <header>
-      <h1>Posts</h1>
-    </header>
-    {% for page in section.pages %}
-      {{ post_macros::snippet(page=page) }}
+<!-- Pagination link hints for crawlers -->
+{% if paginator.previous %}<link rel="prev" href="{{ paginator.previous }}" />{% endif %} {% if
+paginator.next %}<link rel="next" href="{{ paginator.next }}" />{% endif %} {% endblock head %} {%
+block content %}
+<div class="feed-page">
+  <div class="hero" style="padding-bottom: 2rem">
+    <div class="hero-content">
+      <h1 class="hero-title">Posts</h1>
+      <p class="hero-subtitle">
+        Exploring binary exploitation, reverse engineering, and offensive security.
+      </p>
+    </div>
+  </div>
+
+  <div class="post-feed">
+    {% for page in paginator.pages %}
+    <article class="feed-item hover-scale">
+      <a href="{{ page.permalink }}" class="item-link">
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+          <time datetime="{{ page.date }}" class="item-date"
+            >{{ page.date | date(format="%b %d, %Y") }}</time
+          >
+          {% if page.reading_time %}
+          <span style="color: var(--text-muted); font-size: 0.85rem; opacity: 0.6;">&middot;</span>
+          <span style="color: var(--text-muted); font-size: 0.85rem; font-family: var(--font-mono);">&sim;{{ page.reading_time }} min read</span>
+          {% endif %}
+        </div>
+        <h2 class="item-title">{{ page.title }}</h2>
+        {% if page.description %}
+        <p class="item-desc">{{ page.description }}</p>
+        {% endif %}
+      </a>
+    </article>
     {% endfor %}
-  </main>
-  {% include "_partials/footer.html" %}
+  </div>
+
+  {% if paginator.number_pagers > 1 %}
+  <nav class="pagination" aria-label="Posts pagination">
+    {# ← Previous #} {% if paginator.previous %}
+    <a class="pagination-arrow" href="{{ paginator.previous }}" aria-label="Previous page">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </a>
+    {% else %}
+    <span class="pagination-arrow is-disabled" aria-disabled="true">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </span>
+    {% endif %} {# Page numbers with smart windowing #}
+    <div class="pagination-pages">
+      {% set cur = paginator.current_index %} {% set total = paginator.number_pagers %} {% for i in
+      range(start=1, end=total+1) %} {% set show = false %} {# Always show first and last #} {% if i
+      == 1 or i == total %}{% set show = true %}{% endif %} {# Show window of 2 around current #} {%
+      if i >= cur - 2 and i <= cur + 2 %}{% set show = true %}{% endif %} {% if show %} {# Show
+      ellipsis before this page if there's a gap #} {% if i > 1 and i > cur - 2 and i != 2 %} {# We
+      need gap indicator — output ellipsis if prev shown page was not adjacent #} {% if i == cur - 2
+      and cur - 3 > 1 %}
+      <span class="pagination-ellipsis">…</span>
+      {% elif i == total and cur + 2 < total - 1 %}
+      <span class="pagination-ellipsis">…</span>
+      {% endif %} {% endif %} {% if i == cur %}
+      <span class="pagination-num is-current" aria-current="page">{{ i }}</span>
+      {% else %} {% if i == 1 %}
+      <a class="pagination-num" href="{{ paginator.first }}" aria-label="Page {{ i }}">{{ i }}</a>
+      {% elif i == total %}
+      <a class="pagination-num" href="{{ paginator.last }}" aria-label="Page {{ i }}">{{ i }}</a>
+      {% else %}
+      <a class="pagination-num" href="{{ paginator.first }}page/{{ i }}/" aria-label="Page {{ i }}"
+        >{{ i }}</a
+      >
+      {% endif %} {% endif %} {% endif %} {% endfor %}
+    </div>
+
+    {# Next → #} {% if paginator.next %}
+    <a class="pagination-arrow" href="{{ paginator.next }}" aria-label="Next page">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </a>
+    {% else %}
+    <span class="pagination-arrow is-disabled" aria-disabled="true">
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </span>
+    {% endif %}
+  </nav>
+
+  <p class="pagination-meta">Page {{ paginator.current_index }} of {{ paginator.number_pagers }}</p>
+  {% endif %}
+</div>
 {% endblock content %}

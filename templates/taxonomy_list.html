@@ -1,0 +1,58 @@
+{% extends "base.html" %} {% block title %}Tags | {{ config.title }}{% endblock title %} {% block
+description %}Browse all tags on {{ config.title }} — topics include binary exploitation, reverse
+engineering, and offensive security.{% endblock description %} {% block canonical %}{{
+config.base_url }}/tags/{% endblock canonical %} {% block og_title %}Tags | {{ config.title }}{%
+endblock og_title %} {% block og_description %}Browse all tags on {{ config.title }}{% endblock
+og_description %} {% block og_url %}{{ config.base_url }}/tags/{% endblock og_url %} {% block head
+%}
+<!-- SEO: Tags CollectionPage JSON-LD -->
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": "{{ config.base_url }}/tags/#collection",
+    "name": "Tags | {{ config.title }}",
+    "description": "Browse all tags on {{ config.title }}",
+    "url": "{{ config.base_url }}/tags/",
+    "inLanguage": "en-US",
+    "isPartOf": {
+      "@type": "WebSite",
+      "@id": "{{ config.base_url }}/#website"
+    }
+  }
+</script>
+{% endblock head %} {% block content %}
+<div
+  class="tags-page"
+  style="max-width: 65ch; margin: 0 auto; padding-top: 4rem; text-align: center"
+>
+  <header class="page-header" style="margin-bottom: 3rem">
+    <h1 class="page-title" style="font-size: 2rem; font-weight: 600">All Tags</h1>
+  </header>
+
+  <div
+    class="tags-container"
+    style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: center; align-items: center"
+  >
+    {% for term in terms %}
+    <a
+      href="{{ term.permalink }}"
+      class="hover-scale"
+      style="
+        font-size: 1.1rem;
+        color: var(--text-color);
+        font-weight: 400;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: flex-start;
+      "
+    >
+      {{ term.name }}<sup
+        style="font-size: 0.7em; color: var(--text-muted); margin-left: 0.15rem; margin-top: 0.1rem"
+        >{{ term.pages | length }}</sup
+      >
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %}

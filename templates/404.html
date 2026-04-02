@@ -1,40 +1,35 @@
-{% extends "index.html" %}
+{% extends "base.html" %}
 
-{# Override base title to use a 404-specific title. #}
-{% block title %}404 Not Found{% endblock title %}
+{% block title %}404 — command not found | {{ config.title }}{% endblock title %}
+{% block description %}The page you requested could not be found.{% endblock description %}
 
-{# Override base meta tags to use 404-specific ones. I can't set an og:url
-because I don't know what URL will be served this template. #}
-{% block meta %}
-  <meta name="description" content="404 Not Found">
-  <meta property="og:site_name" content="andwati.github.io">
-  <meta property="og:locale" content="en-us">
-  <meta property="og:title" content="404 Not Found">
-  <meta property="og:description" content="404 Not Found">
-  <meta property="og:image" content="https://andwati.github.io/self.webp">
-  <meta property="twitter:card" content="summary">
-  <meta property="twitter:site" content="@andwati_">
-  <meta property="twitter:title" content="404 Not Found">
-  <meta property="twitter:description" content="404 Not Found">
-  <meta property="twitter:image" content="https://andwati.github.io/self.webp">
-{% endblock meta %}
-
-{# Again, since I dont't know ahead of time what page will be served the this
-template. Best we can do is replace the canonical link with a blank. #}
-{% block links %}{% endblock links %}
-
-{# Override base content to use 404-specific content. #}
 {% block content %}
-  <main id="content">
-    <header>
-      <h1>404 Not Found</h1>
-    </header>
-    <figure>
-      <video src="404.mp4" type="video/mp4" autoplay loop controls></video>
-      <figcaption>
-      Video from <a href="https://www.sakugabooru.com/post/show/165603">sakugabooru</a>
-      </figcaption>
-    </figure>
-  </main>
-  {% include "_partials/footer.html" %}
+<div class="notfound-wrap">
+  <div class="term-window" role="main" aria-label="404 error terminal">
+
+    <div class="term-titlebar" aria-hidden="true">
+      <div class="term-dots">
+        <span class="dot-red"></span>
+        <span class="dot-yellow"></span>
+        <span class="dot-green"></span>
+      </div>
+      <span class="term-titlebar-label">bash — {{ config.extra.terminal_hostname | default(value="pwnbox") }}</span>
+    </div>
+
+    <div class="term-body" id="term-body"
+      data-link-home="{{ get_url(path="") }}"
+      data-link-posts="{{ get_url(path="/posts") }}"
+      data-link-tags="{{ get_url(path="/tags") }}"
+      data-prompt="{{ config.extra.terminal_prompt_user | default(value="user@pwnbox") }}"
+      data-hostname="{{ config.extra.terminal_hostname | default(value="pwnbox") }}"
+      data-whoami="{{ config.extra.terminal_whoami | default(value="l0st_r3ader") }}">
+      <!-- lines injected by 404.js -->
+    </div>
+
+  </div>
+</div>
 {% endblock content %}
+
+{% block scripts %}
+<script defer src="{{ get_url(path="js/404.js") }}"></script>
+{% endblock scripts %}

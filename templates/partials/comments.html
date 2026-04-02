@@ -1,0 +1,13 @@
+{% if config.extra.enable_comments and config.extra.utterances_repo and page %}
+{% if page.extra.comments is not defined or page.extra.comments %}
+<div class="comments" id="comments" style="margin-top: 4rem;">
+    <script src="https://utteranc.es/client.js"
+            repo="{{ config.extra.utterances_repo }}"
+            issue-term="pathname"
+            theme="{{ config.extra.utterances_theme | default(value="github-dark") }}"
+            crossorigin="anonymous"
+            async>
+    </script>
+</div>
+{% endif %}
+{% endif %}

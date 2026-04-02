@@ -1,0 +1,23 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "{{ config.title | escape }}",
+  "home_page_url": "{{ config.base_url | escape }}",
+  "feed_url": "{{ feed_url | escape }}",
+  "description": "{{ config.description | escape }}",
+  "authors": [
+    {
+      "name": "{{ config.extra.author | escape }}"
+    }
+  ],
+  "items": [
+    {%- for page in pages %}
+    {
+      "id": "{{ page.permalink | escape }}",
+      "url": "{{ page.permalink | escape }}",
+      "title": "{{ page.title | escape }}",
+      "content_html": {{ page.content | json_encode | safe }},
+      "date_published": "{{ page.date | date(format="%Y-%m-%dT%H:%M:%S%:z") }}"
+    }{% if not loop.last %},{% endif %}
+    {%- endfor %}
+  ]
+}

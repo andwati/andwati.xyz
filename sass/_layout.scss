@@ -1,0 +1,37 @@
+// Layout Constraints
+.site-container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 5vw;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  box-sizing: border-box;
+}
+
+// Constrain all media & tables to their container
+img,
+video,
+iframe,
+table,
+svg {
+  max-width: 100%;
+}
+
+table {
+  display: block;
+  overflow-x: auto;
+  @media (max-width: 640px) {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+// Main Content
+.main-content {
+  flex-grow: 1;
+  padding-bottom: 5rem;
+}

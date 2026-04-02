@@ -13,7 +13,7 @@ Cognitive inertia is the reason changing our habits can be difficult. If you wan
 
 ## Metawork
 
-I will define this as the things we do before getting the "real" work doe. Its  things like choosing the best IDE or text editor, setting up your coding environment, choosing the best note taking app, or even the 'best' operating system. They are the prerequisites of the actual work.
+I will define this as the things we do before getting the "real" work doe. Its things like choosing the best IDE or text editor, setting up your coding environment, choosing the best note taking app, or even the 'best' operating system. They are the prerequisites of the actual work.
 
 I had been stuck on this loop, always trying to craft the perfect workflow. Setting up the best personalized linux distro, switching note taking apps, trying out multiple layouts, stylings and technologies for my blog, the list is endless.
 

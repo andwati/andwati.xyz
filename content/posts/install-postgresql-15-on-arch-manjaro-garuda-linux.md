@@ -1,5 +1,5 @@
 +++
-title ="Install PostgreSQL  on Arch | Manjaro | Garuda Linux"
+title = "Install PostgreSQL  on Arch | Manjaro | Garuda Linux"
 description = "Getting PostgreSQL up and running on Arch Linux-based distros"
 date = 2023-02-16T15:34:14.160Z
 author = "mockingspectre"

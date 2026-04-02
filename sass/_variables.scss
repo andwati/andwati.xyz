@@ -1,0 +1,35 @@
+// Premium Design Variables
+:root {
+  --bg-color: #f9fafb;
+  --text-color: #1a1a1a;
+  --text-muted: #6b7280;
+  --accent-color: #10b981; // Emerald
+  --accent-hover: #059669; // Emerald darker
+  --surface-color: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.05);
+  --shadow-color: rgba(0, 0, 0, 0.05);
+
+  --font-sans: 'Outfit', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --transition-spring: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  --scrollbar-track: #e5e7eb;
+  --scrollbar-thumb: #9ca3af;
+  --scrollbar-thumb-hover: #10b981;
+}
+
+// Dark Mode Overrides
+html.dark {
+  --bg-color: #0a0a0a;
+  --text-color: #f9fafb;
+  --text-muted: #a1a1aa;
+  --surface-color: #141414;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.5);
+
+  --scrollbar-track: #0f0f0f;
+  --scrollbar-thumb: #2a2a2a;
+  --scrollbar-thumb-hover: #10b981;
+}

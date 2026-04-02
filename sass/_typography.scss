@@ -1,0 +1,182 @@
+// Typography Scale (Fluid)
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5em;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: clamp(1.75rem, 5vw, 4.5rem);
+}
+h2 {
+  font-size: clamp(1.35rem, 3vw, 2.5rem);
+}
+h3 {
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  margin-top: 1.5em;
+}
+h4 {
+  font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+}
+h5 {
+  font-size: clamp(1rem, 1.25vw, 1.15rem);
+}
+h6 {
+  font-size: clamp(0.9rem, 1vw, 1rem);
+}
+
+p,
+ul,
+ol,
+figure,
+blockquote {
+  margin-bottom: 1.5rem;
+}
+
+p {
+  max-width: 65ch; // Optimal reading width
+  text-wrap: pretty;
+}
+
+// Footnotes
+.footnote-reference {
+  font-size: 0.75em;
+  vertical-align: super;
+  line-height: 0;
+
+  a {
+    color: var(--accent-color);
+    font-family: var(--font-mono);
+    padding: 0 0.15em;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.footnote-definition {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  border-left: 2px solid var(--border-color);
+  padding-left: 1rem;
+
+  p {
+    margin: 0;
+    max-width: none;
+  }
+}
+
+.footnote-definition-label {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  color: var(--accent-color);
+  font-size: 0.8em;
+  margin-top: 0.1em;
+}
+
+.footnote-backref {
+  font-family: var(--font-mono);
+  color: var(--accent-color);
+  font-size: 0.9em;
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-feature-settings:
+    'liga' 1,
+    'calt' 1;
+  font-variant-ligatures: contextual;
+}
+
+pre {
+  position: relative;
+  padding: 1.25rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  max-width: 100%;
+  border: 1px solid var(--border-color);
+  background: #1e1e2e;
+  // Scrollbars visible on desktop, hidden on mobile
+  @media (max-width: 640px) {
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    font-size: 0.82em;
+  }
+}
+
+.copy-code-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #cdd6f4;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  opacity: 1;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+
+  &.copied {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--bg-color);
+  }
+}
+
+// Button is always visible, no hover-to-reveal needed
+
+code {
+  background: var(--surface-color);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  color: var(--accent-color);
+  border: 1px solid var(--border-color);
+}
+
+pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+}

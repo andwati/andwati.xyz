@@ -1,0 +1,38 @@
+{% if page.taxonomies.tags %}
+  {# Get all pages in the posts section #}
+  {% set section = get_section(path="posts/_index.md") %}
+  
+  {# Initialize an array to hold related pages #}
+  {% set related_pages = [] %}
+  
+  {% for other_page in section.pages %}
+    {% if other_page.permalink != page.permalink and other_page.taxonomies.tags %}
+      {# Check for intersection manually #}
+      {% set has_common_tag = false %}
+      {% for tag in page.taxonomies.tags %}
+        {% if tag in other_page.taxonomies.tags %}
+          {% set_global has_common_tag = true %}
+        {% endif %}
+      {% endfor %}
+      
+      {% if has_common_tag %}
+        {% set_global related_pages = related_pages | concat(with=other_page) %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+
+  {# If we found any related pages, pick top N and display them #}
+  {% set related_limit = config.extra.related_posts_limit | default(value=3) %}
+  {% if related_pages | length > 0 %}
+    <div class="related-posts-section">
+      <h3>{{ config.extra.related_posts_title | default(value="Related Posts") }}</h3>
+      <div class="related-posts-grid">
+        {% for related_page in related_pages | slice(end=related_limit) %}
+          {# We can use a simplified card or the existing post-card.html #}
+          {% set page = related_page %}
+          {% include "partials/post-card.html" %}
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
+{% endif %}

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+    <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
+    <meta name="view-transition" content="same-origin">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="{% block canonical %}{{ config.base_url }}/{% endblock canonical %}">
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="{{ config.title }}">
+    <meta property="og:title" content="{% block og_title %}{{ config.title }}{% endblock og_title %}">
+    <meta property="og:description" content="{% block og_description %}{{ config.description }}{% endblock og_description %}">
+    <meta property="og:url" content="{% block og_url %}{{ config.base_url }}/{% endblock og_url %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock og_type %}">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image" content="{% block og_image %}{{ config.base_url }}/images/og-image.png{% endblock og_image %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ config.title }} — {{ config.description }}">
+    {% block og_extra %}{% endblock og_extra %}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="{{ config.extra.twitter_handle | default(value="@andwati_") }}">
+    <meta name="twitter:title" content="{% block twitter_title %}{{ config.title }}{% endblock twitter_title %}">
+    <meta name="twitter:description" content="{% block twitter_description %}{{ config.description }}{% endblock twitter_description %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ config.base_url }}/images/og-image.png{% endblock twitter_image %}">
+    {% block twitter_extra %}{% endblock twitter_extra %}
+
+    <!-- Theme initializer (runs before paint to avoid flash) -->
+    <script>
+        (function() {
+            try {
+                var storedTheme = localStorage.getItem('theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var shouldUseDark = storedTheme ? storedTheme === 'dark' : prefersDark;
+                if (shouldUseDark) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            } catch (e) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+
+    <!-- SEO: WebSite + Person JSON-LD (sitewide graph) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "{{ config.base_url }}/#website",
+          "url": "{{ config.base_url }}/",
+          "name": "{{ config.title }}",
+          "description": "{{ config.description }}",
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "Person",
+          "@id": "{{ config.base_url }}/#author",
+          "name": "{{ config.extra.author | default(value="mockingspectre") }}",
+          "url": "{{ config.base_url }}/about/",
+          "sameAs": [
+            {% if config.extra.github_url %}"{{ config.extra.github_url }}"{% if config.extra.twitter_url or config.extra.youtube_url %},{% endif %}{% endif %}
+            {% if config.extra.twitter_url %}"{{ config.extra.twitter_url }}"{% if config.extra.youtube_url %},{% endif %}{% endif %}
+            {% if config.extra.youtube_url %}"{{ config.extra.youtube_url }}"{% endif %}
+          ]
+        }
+      ]
+    }
+    </script>
+
+    {% if config.extra.google_analytics %}
+    <!-- Google Analytics — loaded only after cookie consent -->
+    <script>
+      // GA loader called by cookieconsent on consent
+      function loadGoogleAnalytics() {
+        if (window._gaLoaded) return;
+        window._gaLoaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id={{ config.extra.google_analytics }}';
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        window.gtag = gtag;
+        gtag('js', new Date());
+        gtag('config', '{{ config.extra.google_analytics }}', { anonymize_ip: true });
+      }
+    </script>
+    {% endif %}
+
+    <!-- CookieConsent v3 (self-hosted) -->
+    <link rel="stylesheet" href="{{ get_url(path="css/cookieconsent.css") }}">
+    <script defer src="{{ get_url(path="js/cookieconsent.umd.js") }}"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof CookieConsent === 'undefined') return;
+
+        CookieConsent.run({
+          cookie: { name: 'cc_cookie' },
+
+          // Mirror the site's html.dark class — banner switches with the theme toggle
+          darkMode: ['class', 'dark'],
+
+          guiOptions: {
+            consentModal: {
+              layout: 'bar inline',
+              position: 'bottom',
+              flipButtons: false,
+              equalWeightButtons: false
+            },
+            preferencesModal: {
+              layout: 'box',
+              position: 'right'
+            }
+          },
+
+          onConsent: function() {
+            if (CookieConsent.acceptedCategory('analytics')) {
+              if (typeof loadGoogleAnalytics === 'function') loadGoogleAnalytics();
+            }
+          },
+          onChange: function() {
+            if (CookieConsent.acceptedCategory('analytics')) {
+              if (typeof loadGoogleAnalytics === 'function') loadGoogleAnalytics();
+            }
+          },
+
+          categories: {
+            necessary: { enabled: true, readOnly: true },
+            analytics: {
+              enabled: false,
+              readOnly: false,
+              autoClear: { cookies: [{ name: /^(_ga|_gid|_gat)/ }] }
+            }
+          },
+
+          language: {
+            default: 'en',
+            translations: {
+              en: {
+                consentModal: {
+                  title: 'We use cookies',
+                  description: 'This site uses Google Analytics to understand how visitors interact with content. No personal data is sold or shared.',
+                  acceptAllBtn: 'Accept',
+                  acceptNecessaryBtn: 'Reject',
+                  showPreferencesBtn: 'Manage preferences'
+                },
+                preferencesModal: {
+                  title: 'Cookie preferences',
+                  acceptAllBtn: 'Accept all',
+                  acceptNecessaryBtn: 'Reject all',
+                  savePreferencesBtn: 'Save preferences',
+                  closeIconLabel: 'Close',
+                  sections: [
+                    {
+                      title: 'Strictly necessary',
+                      description: 'Required for the site to function. Cannot be disabled.',
+                      linkedCategory: 'necessary'
+                    },
+                    {
+                      title: 'Analytics',
+                      description: 'Google Analytics — helps understand which content is most useful. No personal data sold.',
+                      linkedCategory: 'analytics'
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        });
+      });
+    </script>
+
+    <!-- CookieConsent: accent colors pulled from CSS custom properties -->
+    <style>
+      /* Light mode */
+      #cc-main {
+        --cc-btn-primary-bg: var(--accent-color);
+        --cc-btn-primary-color: #ffffff;
+        --cc-btn-primary-border-color: var(--accent-color);
+        --cc-btn-primary-hover-bg: var(--accent-hover);
+        --cc-btn-primary-hover-border-color: var(--accent-hover);
+        --cc-toggle-on-bg: var(--accent-color);
+        --cc-font-family: 'Outfit', sans-serif;
+        --cc-btn-border-radius: 6px;
+        --cc-modal-border-radius: 10px;
+      }
+
+      /* Dark mode — synced with html.dark via darkMode: ['class', 'dark'] */
+      #cc-main.cc--darkmode {
+        --cc-bg: #111111;
+        --cc-primary-color: #f4f4f5;
+        --cc-secondary-color: #a1a1aa;
+        --cc-btn-primary-bg: var(--accent-color);
+        --cc-btn-primary-color: #ffffff;
+        --cc-btn-primary-border-color: var(--accent-color);
+        --cc-btn-primary-hover-bg: var(--accent-hover);
+        --cc-btn-primary-hover-border-color: var(--accent-hover);
+        --cc-btn-secondary-bg: rgba(255,255,255,0.06);
+        --cc-btn-secondary-color: #a1a1aa;
+        --cc-btn-secondary-border-color: rgba(255,255,255,0.1);
+        --cc-btn-secondary-hover-bg: rgba(255,255,255,0.12);
+        --cc-btn-secondary-hover-color: #f4f4f5;
+        --cc-separator-border-color: rgba(255,255,255,0.1);
+        --cc-cookie-category-block-bg: rgba(255,255,255,0.04);
+        --cc-cookie-category-block-border: rgba(255,255,255,0.08);
+        --cc-toggle-on-bg: var(--accent-color);
+        --cc-footer-bg: #0a0a0a;
+        --cc-footer-border-color: rgba(255,255,255,0.08);
+      }
+
+      /* Accent top border, no default box-shadow */
+      #cc-main .cm,
+      #cc-main .pm { box-shadow: none !important; }
+      #cc-main .cm  { border-top: 2px solid var(--accent-color) !important; }
+    </style>
+
+    {% block head %}{% endblock head %}
+
+    <!-- Font preloads (eliminate FOUT on first paint) -->
+    <link rel="preload" href="{{ get_url(path="fonts/outfit/outfit-v15-latin-regular.woff2") }}" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="{{ get_url(path="fonts/jetbrains-mono/JetBrainsMono-Regular.woff2") }}" as="font" type="font/woff2" crossorigin>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ get_url(path="main.css") }}">
+    <link rel="stylesheet" href="{{ get_url(path="css/syntax.css") }}">
+
+    <!-- Fonts (self-hosted) -->
+    <link rel="stylesheet" href="{{ get_url(path="css/fonts.css") }}">
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="{{ config.title }} RSS Feed" href="{{ get_url(path="rss.xml") }}">
+
+</head>
+<body class="smooth-scroll">
+    <div class="site-container">
+        {% include "partials/header.html" %}
+
+        <main class="main-content">
+            {% block content %}{% endblock content %}
+        </main>
+
+        {% include "partials/footer.html" %}
+    </div>
+    <button id="scroll-to-top" class="scroll-to-top" aria-label="Scroll to top">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+    <!-- Search Modal Overlay -->
+    <div id="search-overlay" class="search-overlay" aria-hidden="true">
+        <div class="search-modal" role="dialog" aria-modal="true" aria-label="Search posts">
+            <div class="search-header">
+                <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="search-input" placeholder="{{ config.extra.search_placeholder | default(value="Search posts...") }}" autocomplete="off">
+            </div>
+            <div id="search-results" class="search-results"></div>
+            <div class="search-footer">
+                <span>Navigate: <kbd>↑</kbd> <kbd>↓</kbd></span>
+                <span>Select: <kbd>Enter</kbd></span>
+                <span>Close: <kbd>ESC</kbd></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Scripts -->
+    <script defer src="{{ get_url(path="js/theme.js") }}"></script>
+    <script defer src="{{ get_url(path="js/scroll-top.js") }}"></script>
+    <script defer src="{{ get_url(path="js/copy-code.js") }}"></script>
+    <!-- Search Scripts -->
+    <script defer src="{{ get_url(path="js/elasticlunr.min.js") }}"></script>
+    <script defer src="{{ get_url(path="js/search.js") }}"></script>
+
+    {% block scripts %}{% endblock scripts %}
+</body>
+</html>

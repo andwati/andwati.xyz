@@ -1,0 +1,180 @@
+// Post Feed Page Container
+.feed-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+// Post Feed
+.post-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin-top: 2rem;
+}
+
+// Homepage "View all posts" CTA
+.view-all-posts {
+  display: flex;
+  justify-content: center;
+  margin: 3rem auto 0;
+  max-width: var(--content-width);
+}
+
+.btn-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--accent-color);
+  background: transparent;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+  letter-spacing: 0.04em;
+
+  &::after {
+    content: '→';
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    background: var(--accent-color);
+    color: var(--bg-color);
+
+    &::after {
+      transform: translateX(4px);
+    }
+  }
+}
+
+.feed-item {
+  display: block;
+}
+
+.item-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.item-date {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.item-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  transition: color 0.2s ease;
+}
+
+.item-link:hover .item-title {
+  color: var(--accent-color);
+}
+
+.item-desc {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+// ──────────────────────────────────────────
+// Pagination
+// ──────────────────────────────────────────
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 5rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  font-family: var(--font-mono);
+}
+
+.pagination-pages {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+// Shared base for arrows + numbers
+.pagination-arrow,
+.pagination-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.5rem;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-color);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    transform: translateY(-1px);
+  }
+}
+
+// Active / current page
+.pagination-num.is-current {
+  background: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #fff;
+  font-weight: 600;
+  cursor: default;
+  pointer-events: none;
+
+  &:hover {
+    transform: none;
+  }
+}
+
+// Disabled arrow (no prev/next page)
+.pagination-arrow.is-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+
+  &:hover {
+    border-color: var(--border-color);
+    color: var(--text-muted);
+    transform: none;
+  }
+}
+
+// Ellipsis gap marker
+.pagination-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+// "Page N of M" helper text
+.pagination-meta {
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}

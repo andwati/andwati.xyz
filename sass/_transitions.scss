@@ -1,0 +1,55 @@
+/*
+ * Cross-Document View Transitions
+ * Enabled via <meta name="view-transition" content="same-origin" />
+ */
+
+// Disable default CSS transitions on the whole page during a view transition
+// so they don't fight with the View Transition API animation.
+html::view-transition-group(*) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+// Custom animation for the old page leaving
+@keyframes fade-out-scale {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+}
+
+// Custom animation for the new page entering
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// Apply the custom animations to the root view transition pseudo-elements
+html::view-transition-old(root) {
+  animation: fade-out-scale 0.25s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+html::view-transition-new(root) {
+  animation: fade-in-scale 0.35s cubic-bezier(0, 0, 0.2, 1) both;
+  // Delay slightly so the old page fades down first before the new one pops over
+  animation-delay: 0.05s;
+}
+
+// Respect user preference for reduced motion
+@media (prefers-reduced-motion: reduce) {
+  html::view-transition-group(*),
+  html::view-transition-old(*),
+  html::view-transition-new(*) {
+    animation: none !important;
+  }
+}

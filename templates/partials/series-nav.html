@@ -1,0 +1,31 @@
+{% if page.extra.series %}
+{% set section_data = get_section(path="posts/_index.md") %}
+{% set_global series_pages = [] %}
+{% for p in section_data.pages %}
+  {% if p.extra.series and p.extra.series == page.extra.series %}
+    {% set_global series_pages = series_pages | concat(with=p) %}
+  {% endif %}
+{% endfor %}
+{% set series_sorted = series_pages | sort(attribute="extra.series_index") %}
+{% set series_total = series_sorted | length %}
+
+<div class="series-nav" aria-label="Post series: {{ page.extra.series }}">
+  <div class="series-nav-header">
+    <span class="series-nav-eyebrow">Series</span>
+    <span class="series-nav-title">{{ page.extra.series }}</span>
+    <span class="series-nav-badge">{{ page.extra.series_index }} / {{ series_total }}</span>
+  </div>
+  <ol class="series-nav-list">
+    {% for p in series_sorted %}
+    <li class="series-nav-item{% if p.permalink == page.permalink %} is-current{% endif %}">
+      <span class="series-nav-index">{{ p.extra.series_index }}</span>
+      {% if p.permalink == page.permalink %}
+      <span class="series-nav-label" aria-current="page">{{ p.title }}</span>
+      {% else %}
+      <a class="series-nav-label" href="{{ p.permalink }}">{{ p.title }}</a>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+</div>
+{% endif %}

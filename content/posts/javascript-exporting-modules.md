@@ -30,7 +30,7 @@ module.exports = function add(a, b) {
 
 // export an object
 module.exports = {
-  name: "Alice",
+  name: 'Alice',
   age: 25,
 };
 ```
@@ -40,11 +40,11 @@ To import a module in Node.js, you can use the require function and pass the pat
 ```javascript
 // main.js
 // import a function
-const add = require("./my-module.js");
+const add = require('./my-module.js');
 console.log(add(2, 3)); // 5
 
 // import an object
-const person = require("./my-module.js");
+const person = require('./my-module.js');
 console.log(person.name); // Alice
 console.log(person.age); // 25
 ```
@@ -53,7 +53,7 @@ Note that Node.js will cache the modules that are imported with require, so if y
 
 ## How to export modules in ES6?
 
-ES6 is the  version of Javascript that introduced many new features, including a native module system. ES6 modules use the `import` and `export` syntax.
+ES6 is the version of Javascript that introduced many new features, including a native module system. ES6 modules use the `import` and `export` syntax.
 
 To export a module in ES6, you can use the `export` keyword followed by the declaration of the value that you want to export. You can also use the export keyword with curly braces to export a list of named values. For example:
 
@@ -74,7 +74,7 @@ export class Person {
 
 // export an object
 export const person = {
-  name: "Alice",
+  name: 'Alice',
   age: 25,
 };
 ```
@@ -84,17 +84,17 @@ To import a module in ES6, you can use the `import` keyword followed by the name
 ```javascript
 // main.js
 // import a function
-import { add } from "./my-module.js";
+import { add } from './my-module.js';
 console.log(add(2, 3)); // 5
 
 // import a class
-import { Person } from "./my-module.js";
-const person = new Person("Bob", 30);
+import { Person } from './my-module.js';
+const person = new Person('Bob', 30);
 console.log(person.name); // Bob
 console.log(person.age); // 30
 
 // import an object
-import { person as Alice } from "./my-module.js";
+import { person as Alice } from './my-module.js';
 console.log(Alice.name); // Alice
 console.log(Alice.age); // 25
 ```
@@ -138,7 +138,7 @@ module.exports = function add(a, b) {
 
 // export an object
 module.exports = {
-  name: "Alice",
+  name: 'Alice',
   age: 25,
 };
 
@@ -158,17 +158,17 @@ To import a default export, you can use the import keyword without curly braces 
 ```javascript
 // main.js
 // import a default export
-import add from "./my-module.js";
+import add from './my-module.js';
 console.log(add(2, 3)); // 5
 
 // import another default export
-import person from "./my-module.js";
+import person from './my-module.js';
 console.log(person.name); // Alice
 console.log(person.age); // 25
 
 // import another default export
-import Person from "./my-module.js";
-const person = new Person("Bob", 30);
+import Person from './my-module.js';
+const person = new Person('Bob', 30);
 console.log(person.name); // Bob
 console.log(person.age); // 30
 ```
@@ -178,17 +178,17 @@ To import a module.exports value, you can use the require function and assign an
 ```javascript
 // main.js
 // import a module.exports value
-const add = require("./my-module.js");
+const add = require('./my-module.js');
 console.log(add(2, 3)); // 5
 
 // import another module.exports value
-const person = require("./my-module.js");
+const person = require('./my-module.js');
 console.log(person.name); // Alice
 console.log(person.age); // 25
 
 // import another module.exports value
-const Person = require("./my-module.js");
-const person = new Person("Bob", 30);
+const Person = require('./my-module.js');
+const person = new Person('Bob', 30);
 console.log(person.name); // Bob
 console.log(person.age); // 30
 ```

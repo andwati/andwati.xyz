@@ -4,7 +4,7 @@ description = "Integrating netlify cms"
 date = 2022-11-24T15:34:14.160Z
 author = "mockingspectre"
 [taxonomies]
-tags =  ["blog", "hugo", "netlify","netlify-cms","github"]
+tags = ["blog", "hugo", "netlify", "netlify-cms", "github"]
 +++
 
 Migrating to a better content management system through Netlify CMS
@@ -83,32 +83,27 @@ backend:
 # This line should *not* be indented
 publish_mode: editorial_workflow
 
-media_folder: "static/images/uploads" # Media files will be stored in the repo under static/images/uploads
-public_folder: "/images/uploads" # The src attribute for uploaded media will begin with /images/uploads
+media_folder: 'static/images/uploads' # Media files will be stored in the repo under static/images/uploads
+public_folder: '/images/uploads' # The src attribute for uploaded media will begin with /images/uploads
 
 collections:
-  - name: "post" # Used in routes, e.g., /admin/collections/blog
-    label: "posts" # Used in the UI
-    folder: "content/post" # The path to the folder where the documents are stored
+  - name: 'post' # Used in routes, e.g., /admin/collections/blog
+    label: 'posts' # Used in the UI
+    folder: 'content/post' # The path to the folder where the documents are stored
     create: true # Allow users to create new documents in this collection
-    slug: "{{year}}-{{month}}-{{day}}-{{slug}}" # Filename template, e.g., YYYY-MM-DD-title.md
+    slug: '{{year}}-{{month}}-{{day}}-{{slug}}' # Filename template, e.g., YYYY-MM-DD-title.md
     fields: # The fields for each document, usually in front matter
-      - { label: "Layout", name: "layout", widget: "hidden", default: "blog" }
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Draft", name: "draft", widget: "boolean", default: true }
-      - { label: "Publish Date", name: "date", widget: "datetime" }
-      - { label: "Last Modified", name: "lastmod", widget: "datetime" }
-      - { label: "Body", name: "body", widget: "markdown" }
-      - { label: "Keywords", name: "keywords", widget: "list" }
-      - { label: "Tags", name: "tags", widget: "list" }
-      - { label: "Categories", name: "categories", widget: "list" }
-      - { label: "Comments", name: "comment", widget: "boolean", default: true }
-      - {
-          label: "Table of Contents",
-          name: "toc",
-          widget: "boolean",
-          default: true,
-        }
+      - { label: 'Layout', name: 'layout', widget: 'hidden', default: 'blog' }
+      - { label: 'Title', name: 'title', widget: 'string' }
+      - { label: 'Draft', name: 'draft', widget: 'boolean', default: true }
+      - { label: 'Publish Date', name: 'date', widget: 'datetime' }
+      - { label: 'Last Modified', name: 'lastmod', widget: 'datetime' }
+      - { label: 'Body', name: 'body', widget: 'markdown' }
+      - { label: 'Keywords', name: 'keywords', widget: 'list' }
+      - { label: 'Tags', name: 'tags', widget: 'list' }
+      - { label: 'Categories', name: 'categories', widget: 'list' }
+      - { label: 'Comments', name: 'comment', widget: 'boolean', default: true }
+      - { label: 'Table of Contents', name: 'toc', widget: 'boolean', default: true }
 ```
 
 **Step 5**
@@ -137,10 +132,10 @@ Lastly, we will add the following script before the closing `<body>` tag of our 
 ```html
 <script>
   if (window.netlifyIdentity) {
-    window.netlifyIdentity.on("init", (user) => {
+    window.netlifyIdentity.on('init', (user) => {
       if (!user) {
-        window.netlifyIdentity.on("login", () => {
-          document.location.href = "/admin/";
+        window.netlifyIdentity.on('login', () => {
+          document.location.href = '/admin/';
         });
       }
     });

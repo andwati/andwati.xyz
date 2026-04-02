@@ -1,0 +1,60 @@
+// Scroll to Top Floating Button
+.scroll-to-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--bg-color);
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+  cursor: pointer;
+  z-index: 100;
+
+  // Hidden state by default
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(1rem);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  // Visible state triggered by JS
+  &.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  @media (hover: hover) {
+    &:hover {
+      background: var(--accent-color);
+      color: var(--bg-color);
+      transform: translateY(-0.25rem);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2); // Emerald glow matching accent
+    }
+
+    &:hover svg {
+      transform: translateY(-2px);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 4px;
+  }
+
+  svg {
+    transition: transform 0.2s ease;
+  }
+
+  // Responsive padding for mobile devices
+  @media (max-width: 768px) {
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+}
