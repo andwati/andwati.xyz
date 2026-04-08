@@ -28,7 +28,7 @@ int main(){
 We will compile the  hello world C program, then  dump the assembly in Intel syntax(it defaults to AT&T syntax, a cancer).
 
 ```sh 
-gcc -o hello hello.c **&&** objdump -d -M intel hello **|** grep -A 15 **"**<main>:**"**  
+gcc -o hello hello.c && objdump -d -M intel hello | grep -A 15 "**<main>:**"  
 ```
 
 <br>
