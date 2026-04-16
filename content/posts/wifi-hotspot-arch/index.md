@@ -13,8 +13,6 @@ For context: I'm running a minimal Arch Linux install with KDE Plasma. No bloat,
 
 Here's the whole story, and more importantly, the fix.
 
-
-
 ## It starts innocently enough
 
 You fire up `nmcli`, throw together what looks like a perfectly reasonable hotspot command, and get slapped with this:
@@ -28,8 +26,6 @@ Vague. Unhelpful. The kind of error message that was clearly written by someone 
 Your first instinct is probably to check if your WiFi card even supports AP mode — reasonable. Mine does. Maybe NetworkManager picked the wrong interface — also reasonable, so you specify `ifname wlp61s0` explicitly. Still fails. You check for a conflicting `dnsmasq` service. It doesn't even exist on the system.
 
 At this point the error message has told you nothing useful, and you're running out of obvious things to blame.
-
-
 
 ## The actual culprit
 
@@ -50,8 +46,6 @@ sudo pacman -S dnsmasq
 ```
 
 Don't enable it, don't start it. Just having it on the system is enough. NetworkManager will find it and handle the rest.
-
-
 
 ## Getting internet to actually work
 
