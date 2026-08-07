@@ -1,5 +1,6 @@
+{% component post_card(page, index) %}
 <article class="feed-item card hover-scale">
-  <span class="item-index">{% if loop.index < 10 %}0{{ loop.index }}{% else %}{{ loop.index }}{% endif %}</span>
+  <span class="item-index">{% if index < 10 %}0{{ index }}{% else %}{{ index }}{% endif %}</span>
 
   <div class="item-body">
     <h2 class="item-title">
@@ -28,10 +29,11 @@
       {% if page.taxonomies.tags %}
       <div class="item-tags">
         {% for tag in page.taxonomies.tags %}
-        <a href="{{ get_taxonomy_url(kind="tags", name=tag) }}" class="tag">{{ tag }}</a>
+        <a href="{{ get_taxonomy_url(kind="tags", term=tag) }}" class="tag">{{ tag }}</a>
         {% endfor %}
       </div>
       {% endif %}
     </div>
   </div>
 </article>
+{% endcomponent post_card %}

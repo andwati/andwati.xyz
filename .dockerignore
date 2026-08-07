@@ -1,0 +1,8 @@
+public
+node_modules
+.wrangler
+.git
+manimations/*.*
+/zola
+/zola-v*.tar.gz
+/artifacts

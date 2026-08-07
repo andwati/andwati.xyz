@@ -8,12 +8,12 @@
 {% block og_title %}{{ page.title }}{% endblock og_title %}
 {% block og_description %}{{ page.description | default(value=config.description) }}{% endblock og_description %}
 {% block og_url %}{{ page.permalink }}{% endblock og_url %}
-{% block og_type %}{% if page.ancestors is containing("posts/_index.md") %}article{% else %}website{% endif %}{% endblock og_type %}
+{% block og_type %}{% if "posts/_index.md" in page.ancestors %}article{% else %}website{% endif %}{% endblock og_type %}
 {% block og_image %}{{ config.base_url }}{{ page.extra.image | default(value="/images/og-image.png") }}{% endblock og_image %}
 {% block og_extra %}
-  {% if page.ancestors is containing("posts/_index.md") %}
-  {% if page.date %}<meta property="article:published_time" content="{{ page.date | date(format="%+") }}">{% endif %}
-  {% if page.updated %}<meta property="article:modified_time" content="{{ page.updated | date(format="%+") }}">{% endif %}
+  {% if "posts/_index.md" in page.ancestors %}
+  {% if page.date %}<meta property="article:published_time" content="{{ page.date | date(format="%Y-%m-%dT%H:%M:%S%:z") }}">{% endif %}
+  {% if page.updated %}<meta property="article:modified_time" content="{{ page.updated | date(format="%Y-%m-%dT%H:%M:%S%:z") }}">{% endif %}
   <meta property="article:author" content="{{ config.extra.author }}">
   {% if page.taxonomies.tags %}
     {% for tag in page.taxonomies.tags %}
@@ -29,7 +29,7 @@
 {% block twitter_image %}{{ config.base_url }}{{ page.extra.image | default(value="/images/og-image.png") }}{% endblock twitter_image %}
 
 {% block head %}
-  {% if page.ancestors is containing("posts/_index.md") %}
+  {% if "posts/_index.md" in page.ancestors %}
   <!-- SEO: BlogPosting JSON-LD -->
   <script type="application/ld+json">
   {
@@ -45,8 +45,8 @@
     "image": "{{ config.base_url | safe }}{% if page.extra.image %}{{ page.extra.image | safe }}{% else %}/images/og-image.png{% endif %}",
     "url": "{{ page.permalink | safe }}",
     "inLanguage": "en-US",
-    {% if page.date %}"datePublished": "{{ page.date | date(format="%+") }}",{% endif %}
-    {% if page.updated %}"dateModified": "{{ page.updated | date(format="%+") }}",{% else %}{% if page.date %}"dateModified": "{{ page.date | date(format="%+") }}",{% endif %}{% endif %}
+    {% if page.date %}"datePublished": "{{ page.date | date(format="%Y-%m-%dT%H:%M:%S%:z") }}",{% endif %}
+    {% if page.updated %}"dateModified": "{{ page.updated | date(format="%Y-%m-%dT%H:%M:%S%:z") }}",{% else %}{% if page.date %}"dateModified": "{{ page.date | date(format="%Y-%m-%dT%H:%M:%S%:z") }}",{% endif %}{% endif %}
     "author": {
       "@type": "Person",
       "@id": "{{ config.base_url | safe }}/#author",
@@ -193,7 +193,7 @@
             <div class="post-tags">
                 {% if page.taxonomies.tags %}
                     {% for tag in page.taxonomies.tags %}
-                        <a href="{{ get_taxonomy_url(kind="tags", name=tag) }}" class="tag">#{{ tag }}</a>
+                        <a href="{{ get_taxonomy_url(kind="tags", term=tag) }}" class="tag">#{{ tag }}</a>
                     {% endfor %}
                 {% endif %}
             </div>

@@ -41,6 +41,7 @@ upload.html
 display.html
 
 ```html
+{% raw %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -60,6 +61,7 @@ display.html
     <p><a href="/">Upload another image</a></p>
   </body>
 </html>
+{% endraw %}
 ```
 
 `[app.py](http://app.py)`

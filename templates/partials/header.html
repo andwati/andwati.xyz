@@ -10,7 +10,7 @@
                 {% if config.extra.menu %}
                     {% for item in config.extra.menu %}
                         {% set current = current_path | default(value="") %}
-                        {% set is_active = item.match and current is starting_with(item.match) %}
+                        {% set is_active = item.match and current is starting_with(pat=item.match) %}
                         <a href="{{ get_url(path=item.url) }}" class="nav-item{% if is_active %} is-active{% endif %}"{% if is_active %} aria-current="page"{% endif %}>{{ item.name }}</a>
                     {% endfor %}
                 {% endif %}

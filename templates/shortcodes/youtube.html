@@ -1,22 +1,16 @@
-<div class="youtube-wrapper">
-    <iframe
-        src="https://www.youtube-nocookie.com/embed/{{ id }}{% if autoplay %}?autoplay=1{% endif %}"
-        {% if title %}title="{{ title }}"{% endif %}
-        loading="lazy"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-    </iframe>
-</div>
+{% component youtube(id: string, page, config, title = "", autoplay = false) %}
+<div class="youtube-wrapper"><iframe src="https://www.youtube-nocookie.com/embed/{{ id }}{% if autoplay %}?autoplay=1{% endif %}"{% if title %} title="{{ title }}"{% endif %} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
 <!-- SEO: VideoObject JSON-LD (confirms this page hosts the embedded video) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "VideoObject",
-  "name": {{ title | default(value=page.title) | json_encode | safe }},
+  "name": {% if title %}{{ title | json_encode | safe }}{% else %}{{ page.title | json_encode | safe }}{% endif %},
   "description": {{ page.description | default(value=config.description) | json_encode | safe }},
   "thumbnailUrl": "https://i.ytimg.com/vi/{{ id | safe }}/sddefault.jpg"
-  {% if page.date %},"uploadDate": "{{ page.date | date(format="%+") }}"{% endif %},
+  {% if page.date %},"uploadDate": "{{ page.date | date(format="%Y-%m-%dT%H:%M:%S%:z") }}"{% endif %},
   "embedUrl": "https://www.youtube-nocookie.com/embed/{{ id | safe }}",
   "contentUrl": "https://www.youtube.com/watch?v={{ id | safe }}"
 }
 </script>
+{% endcomponent youtube %}

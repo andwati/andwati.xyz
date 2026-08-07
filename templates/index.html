@@ -27,8 +27,8 @@ block og_url %}{{ config.base_url }}/{% endblock og_url %} {% block head %}
           "@type": "Person",
           "@id": "{{ config.base_url | safe }}/#author"
         }
-        {% if page.date %},"datePublished": "{{ page.date | date(format="%+") }}"{% endif %}
-        {% if page.updated %},"dateModified": "{{ page.updated | date(format="%+") }}"{% elif page.date %},"dateModified": "{{ page.date | date(format="%+") }}"{% endif %}
+        {% if page.date %},"datePublished": "{{ page.date | date(format="%Y-%m-%dT%H:%M:%S%:z") }}"{% endif %}
+        {% if page.updated %},"dateModified": "{{ page.updated | date(format="%Y-%m-%dT%H:%M:%S%:z") }}"{% elif page.date %},"dateModified": "{{ page.date | date(format="%Y-%m-%dT%H:%M:%S%:z") }}"{% endif %}
       }{% if not loop.last %},{% endif %}
       {% endfor %}
     ]
@@ -41,7 +41,7 @@ block og_url %}{{ config.base_url }}/{% endblock og_url %} {% block head %}
 
 <div class="post-feed-list">
   {% set post_limit = config.extra.homepage_post_limit | default(value=3) %}
-  {% for page in section.pages | slice(end=post_limit) %} {% include "partials/post-card.html" %} {% endfor %}
+  {% for page in section.pages[:post_limit] %} {{<post_card page={page} index={loop.index} />}} {% endfor %}
 </div>
 
 <div class="view-all-posts">
