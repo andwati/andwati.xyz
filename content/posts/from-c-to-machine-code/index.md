@@ -7,7 +7,7 @@ date = 2026-04-08
 tags = ["assembly", "rev", "pwn"]
 +++
 
-{{ youtube(id="KbH239zvDtM") }}
+{{<youtube id="KbH239zvDtM" page={page} config={config} />}}
 
 Before diving into how to break a program, we need to understand what the computer is actually executing. When you write a C program, the processor doesn't understand a single line of it. The C language exists for *our* benefit, allowing us to write logic without having to manually shuffle bits around in the processor.
 
@@ -78,9 +78,9 @@ In x64 Linux, when a function is called, the arguments are passed directly into 
 5. `r8` (Fifth argument)  
 6. `r9` (Sixth argument)
 
-{% note() %}
+{% <note> %}
 In older x86 32-bit binaries, arguments aren't passed in registers at all; they are pushed onto the stack. When a function finishes and returns a value, that return value is almost always placed in the **`rax`** register (or `eax` in 32-bit).
-{% end %}
+{% </note> %}
 
 ### **Register Sizes and "Words"**
 

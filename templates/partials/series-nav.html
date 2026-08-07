@@ -3,7 +3,7 @@
 {% set_global series_pages = [] %}
 {% for p in section_data.pages %}
   {% if p.extra.series and p.extra.series == page.extra.series %}
-    {% set_global series_pages = series_pages | concat(with=p) %}
+    {% set_global series_pages = [...series_pages, p] %}
   {% endif %}
 {% endfor %}
 {% set series_sorted = series_pages | sort(attribute="extra.series_index") %}

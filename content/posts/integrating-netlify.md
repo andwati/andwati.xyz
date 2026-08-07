@@ -76,6 +76,7 @@ The first file, `admin/index.html`, is the entry point for the Netlify CMS admin
 Now let’s move to the configuration section. These are the configurations that go into the `config.yml` file. This process is different for every site. I followed the guidelines on the website and made minor adjustments. It worked on my website. The configuration options are available at the [docs](<https://www.netlifycms.org/docs/add-to-your-site/#:~:text=%2C%20MyTemplate)-,Configuration,-Configuration%20is%20different>). This is how I configured my config.yml file:
 
 ```yaml
+{% raw %}
 backend:
   name: git-gateway
   branch: netlify-cms # Branch to update (optional; defaults to master)
@@ -104,6 +105,7 @@ collections:
       - { label: 'Categories', name: 'categories', widget: 'list' }
       - { label: 'Comments', name: 'comment', widget: 'boolean', default: true }
       - { label: 'Table of Contents', name: 'toc', widget: 'boolean', default: true }
+{% endraw %}
 ```
 
 **Step 5**

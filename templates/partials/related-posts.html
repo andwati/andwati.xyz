@@ -16,7 +16,7 @@
       {% endfor %}
       
       {% if has_common_tag %}
-        {% set_global related_pages = related_pages | concat(with=other_page) %}
+        {% set_global related_pages = [...related_pages, other_page] %}
       {% endif %}
     {% endif %}
   {% endfor %}
@@ -27,10 +27,8 @@
     <div class="related-posts-section">
       <h3>{{ config.extra.related_posts_title | default(value="Related Posts") }}</h3>
       <div class="related-posts-grid">
-        {% for related_page in related_pages | slice(end=related_limit) %}
-          {# We can use a simplified card or the existing post-card.html #}
-          {% set page = related_page %}
-          {% include "partials/post-card.html" %}
+        {% for related_page in related_pages[:related_limit] %}
+          {{<post_card page={related_page} index={loop.index} />}}
         {% endfor %}
       </div>
     </div>

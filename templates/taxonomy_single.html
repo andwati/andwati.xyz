@@ -32,8 +32,8 @@ term.permalink }}{% endblock og_url %} {% block head %}
           "@type": "Person",
           "@id": "{{ config.base_url | safe }}/#author"
         }
-        {% if page.date %},"datePublished": "{{ page.date | date(format="%+") }}"{% endif %}
-        {% if page.updated %},"dateModified": "{{ page.updated | date(format="%+") }}"{% elif page.date %},"dateModified": "{{ page.date | date(format="%+") }}"{% endif %}
+        {% if page.date %},"datePublished": "{{ page.date | date(format="%Y-%m-%dT%H:%M:%S%:z") }}"{% endif %}
+        {% if page.updated %},"dateModified": "{{ page.updated | date(format="%Y-%m-%dT%H:%M:%S%:z") }}"{% elif page.date %},"dateModified": "{{ page.date | date(format="%Y-%m-%dT%H:%M:%S%:z") }}"{% endif %}
       }{% if not loop.last %},{% endif %}
       {% endfor %}
     ]
