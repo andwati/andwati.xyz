@@ -17,7 +17,7 @@ A personal blog (andwati.com — "Thoughts and Musings") built with [Zola](https
 
 There is no JS/CSS build tooling beyond Zola itself: `compile_sass = true` in `zola.toml` means Sass under `sass/` is compiled directly by Zola.
 
-Deployment is via Cloudflare (`wrangler.toml`, `npm run deploy` → `zola build && wrangler deploy`), serving `public/` as static assets on `andwati.com`/`www.andwati.com`.
+Deployment is self-hosted via Dokploy: `Dockerfile` builds the site with Zola and serves `public/` with `static-web-server`, configured by `sws.toml` (security headers, redirects) at the image's working directory root.
 
 ## Content structure
 

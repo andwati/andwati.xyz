@@ -1,9 +1,8 @@
 # Multi-stage build: generate llms.txt with Node, build the site with Zola,
 # then serve the static output with static-web-server.
 #
-# This is the Dokploy/self-hosted deployment path. It's independent of the
-# Cloudflare Pages path (`npm run deploy` / wrangler.toml) - that stays in
-# place as an option, this doesn't replace it.
+# This is the Dokploy/self-hosted deployment path (the only one - the prior
+# Cloudflare Pages/Workers path has been retired).
 
 FROM node:22-slim AS llms
 WORKDIR /project
@@ -18,4 +17,5 @@ RUN ["/zola", "build"]
 
 FROM ghcr.io/static-web-server/static-web-server:2
 COPY --from=zola /project/public /public
+COPY sws.toml /sws.toml
 EXPOSE 80
