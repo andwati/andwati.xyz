@@ -58,7 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const theme = htmlElement.classList.contains('dark')
       ? commentsEl.dataset.utterancesThemeDark
       : commentsEl.dataset.utterancesThemeLight;
-    frame.contentWindow.postMessage({ type: 'set-theme', theme }, 'https://utteranc.es');
+    // The iframe briefly shares our origin before it navigates to utteranc.es,
+    // so posting with that targetOrigin throws until the navigation completes.
+    try {
+      frame.contentWindow.postMessage({ type: 'set-theme', theme }, 'https://utteranc.es');
+    } catch (e) {
+      // Ignore: frame hasn't navigated to utteranc.es yet.
+    }
   };
   new MutationObserver(syncUtterancesTheme).observe(htmlElement, {
     attributes: true,

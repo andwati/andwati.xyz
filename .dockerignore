@@ -1,6 +1,5 @@
 public
 node_modules
-.wrangler
 .git
 manimations/*.*
 /zola
