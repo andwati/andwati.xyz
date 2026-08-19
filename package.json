@@ -2,11 +2,15 @@
   "name": "andwati-com",
   "private": true,
   "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "satori": "^0.29.0",
+    "wawoff2": "^2.0.1",
     "wrangler": "^4"
   },
   "scripts": {
     "generate:llms": "node scripts/generate-llms.mjs",
-    "build": "npm run generate:llms && zola build",
+    "generate:og": "node scripts/generate-og-images.mjs",
+    "build": "npm run generate:llms && npm run generate:og && zola build",
     "deploy": "npm run build && wrangler deploy"
   }
 }

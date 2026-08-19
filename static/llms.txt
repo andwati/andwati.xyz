@@ -14,6 +14,7 @@ This site contains articles in English, often with commands, code samples, worke
 
 ## Published articles
 
+- [Self-Hosting Gitea and Automating GitHub Mirrors](https://andwati.com/posts/self-hosting-gitea-and-mirroring-github/): Self-Hosting Gitea and Automating GitHub Mirrors (and Everything Cloudflare Broke Along the Way)
 - [The One Thing Nobody Tells You About WiFi Hotspots on Arch Linux](https://andwati.com/posts/wifi-hotspot-arch/): A minimal Arch install is great until NetworkManager silently fails to find a binary you didn't know you needed
 - [From C to Machine Code: What Actually Runs](https://andwati.com/posts/from-c-to-machine-code/): Before diving into how to break a program, we need to understand what the computer is actually executing
 - [The Single Byte That Kills Your Exploit: Understanding Endianness](https://andwati.com/posts/the-single-byte-that-kills-your-exploit-understanding-endianness/): Problem: Computers speak different languages, like people
