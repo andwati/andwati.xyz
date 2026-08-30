@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "writings",
+  "info": {
+    "singularName": "writing",
+    "pluralName": "writings",
+    "displayName": "Writing",
+    "description": "Long-form essays and technical posts, synced to content/writings/."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "author": {
+      "type": "string"
+    },
+    "date": {
+      "type": "date",
+      "required": true
+    },
+    "updated": {
+      "type": "date"
+    },
+    "draft": {
+      "type": "boolean",
+      "default": false
+    },
+    "canonical_url": {
+      "type": "string"
+    },
+    "tags": {
+      "type": "json",
+      "description": "Array of tag strings, maps to [taxonomies].tags"
+    },
+    "series": {
+      "type": "string",
+      "description": "Maps to [extra].series"
+    },
+    "series_index": {
+      "type": "integer",
+      "description": "Maps to [extra].series_index"
+    },
+    "llms_description": {
+      "type": "text",
+      "description": "Maps to [extra].llms_description"
+    },
+    "body": {
+      "type": "richtext",
+      "description": "Markdown body below the frontmatter"
+    }
+  }
+}

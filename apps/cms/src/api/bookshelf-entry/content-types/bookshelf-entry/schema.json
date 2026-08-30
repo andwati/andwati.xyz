@@ -1,0 +1,71 @@
+{
+  "kind": "collectionType",
+  "collectionName": "bookshelf_entries",
+  "info": {
+    "singularName": "bookshelf-entry",
+    "pluralName": "bookshelf-entries",
+    "displayName": "Bookshelf Entry",
+    "description": "Books and papers, synced to content/bookshelf/. `kind` selects which identifier fields apply."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "kind": {
+      "type": "enumeration",
+      "enum": ["book", "paper"],
+      "required": true
+    },
+    "authors": {
+      "type": "json",
+      "description": "Array of author name strings"
+    },
+    "isbn": {
+      "type": "string",
+      "description": "Books only"
+    },
+    "doi": {
+      "type": "string",
+      "description": "Papers only"
+    },
+    "arxiv_id": {
+      "type": "string",
+      "description": "Papers only, optional"
+    },
+    "url": {
+      "type": "string",
+      "description": "Papers only: landing page / source link"
+    },
+    "cover_image": {
+      "type": "string",
+      "description": "Path to the locally cached cover, e.g. /covers/slug.jpg"
+    },
+    "rating": {
+      "type": "integer",
+      "min": 1,
+      "max": 5
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["reading", "read", "abandoned"]
+    },
+    "date_started": {
+      "type": "date"
+    },
+    "date_finished": {
+      "type": "date"
+    },
+    "tags": {
+      "type": "json",
+      "description": "Array of tag strings, maps to [taxonomies].tags"
+    },
+    "body": {
+      "type": "richtext",
+      "description": "Personal review/notes below the frontmatter"
+    }
+  }
+}

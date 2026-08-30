@@ -12,7 +12,8 @@
       "scripts/**",
       "!apps/**/dist",
       "!apps/**/.strapi",
-      "!apps/**/public"
+      "!apps/**/public",
+      "!apps/**/types/generated"
     ]
   },
   "formatter": {

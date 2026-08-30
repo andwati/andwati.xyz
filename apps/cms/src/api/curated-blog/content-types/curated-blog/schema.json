@@ -1,0 +1,30 @@
+{
+  "kind": "collectionType",
+  "collectionName": "curated_blogs",
+  "info": {
+    "singularName": "curated-blog",
+    "pluralName": "curated-blogs",
+    "displayName": "Curated Blog",
+    "description": "Hand-picked external blogs, synced to content/blogs/. No live feed fetching."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "feed_url": {
+      "type": "string"
+    },
+    "body": {
+      "type": "richtext",
+      "description": "One-to-two sentence blurb below the frontmatter"
+    }
+  }
+}

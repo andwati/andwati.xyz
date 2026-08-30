@@ -1,0 +1,50 @@
+{
+  "kind": "collectionType",
+  "collectionName": "portfolio_entries",
+  "info": {
+    "singularName": "portfolio-entry",
+    "pluralName": "portfolio-entries",
+    "displayName": "Portfolio Entry",
+    "description": "Projects and professional work, synced to content/portfolio/."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "role": {
+      "type": "string"
+    },
+    "date_start": {
+      "type": "date"
+    },
+    "date_end": {
+      "type": "date"
+    },
+    "outcome": {
+      "type": "string"
+    },
+    "draft": {
+      "type": "boolean",
+      "default": false
+    },
+    "links": {
+      "type": "json",
+      "description": "Array of { label, url }, maps to [[links]]"
+    },
+    "tags": {
+      "type": "json",
+      "description": "Array of tag strings, maps to [taxonomies].tags"
+    },
+    "body": {
+      "type": "richtext",
+      "description": "Markdown case-study body below the frontmatter"
+    }
+  }
+}
