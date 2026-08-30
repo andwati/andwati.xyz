@@ -4,7 +4,7 @@ description = "Placeholder portfolio entry establishing the schema."
 role = "Author"
 date_start = 2026-01-01
 outcome = "Established the portfolio content schema."
-draft = true
+draft = false
 [[links]]
 label = "Source"
 url = "https://github.com/andwati"

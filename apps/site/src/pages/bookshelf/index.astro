@@ -1,0 +1,38 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+
+const items = (await getCollection("bookshelf")).sort(
+  (a, b) =>
+    (b.data.date_finished?.valueOf() ?? 0) -
+    (a.data.date_finished?.valueOf() ?? 0),
+);
+---
+
+<Base title="Bookshelf">
+  <h1>Bookshelf</h1>
+  {
+    items.map((entry) => (
+      <div class="card">
+        <h3>
+          {entry.data.title} <span class="tag">{entry.data.kind}</span>
+        </h3>
+        <p class="meta">{entry.data.authors.join(", ")}</p>
+        {entry.data.rating && <p class="meta">{"★".repeat(entry.data.rating)}</p>}
+        {entry.data.status && <p class="meta">{entry.data.status}</p>}
+        {entry.data.kind === "book" && entry.data.isbn && <p class="meta">ISBN {entry.data.isbn}</p>}
+        {entry.data.kind === "paper" && entry.data.arxiv_id && (
+          <p class="meta">
+            arXiv:{entry.data.arxiv_id}
+            {entry.data.url && (
+              <>
+                {" "}
+                · <a href={entry.data.url}>source</a>
+              </>
+            )}
+          </p>
+        )}
+      </div>
+    ))
+  }
+</Base>

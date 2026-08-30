@@ -1,0 +1,28 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+
+const projects = (
+  await getCollection("portfolio", ({ data }) => !data.draft)
+).sort(
+  (a, b) =>
+    (b.data.date_start?.valueOf() ?? 0) - (a.data.date_start?.valueOf() ?? 0),
+);
+---
+
+<Base title="Portfolio">
+  <h1>Portfolio</h1>
+  {
+    projects.map((entry) => (
+      <div class="card">
+        <h3>{entry.data.title}</h3>
+        <p class="meta">{entry.data.role}</p>
+        {entry.data.description && <p>{entry.data.description}</p>}
+        {entry.data.outcome && <p>{entry.data.outcome}</p>}
+        {entry.data.links.map((link) => (
+          <a href={link.url}>{link.label}</a>
+        ))}
+      </div>
+    ))
+  }
+</Base>

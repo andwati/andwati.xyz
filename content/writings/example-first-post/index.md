@@ -3,7 +3,7 @@ title = "Why This Site Exists"
 description = "A short note on what this new site is, and why it's more than a tech blog."
 author = "andwati"
 date = 2026-08-30
-draft = true
+draft = false
 [taxonomies]
 tags = ["meta"]
 [extra]

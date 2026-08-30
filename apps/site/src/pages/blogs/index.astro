@@ -1,0 +1,26 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+
+const blogs = await getCollection("blogs");
+const rendered = await Promise.all(
+  blogs.map(async (entry) => ({
+    entry,
+    Content: (await render(entry)).Content,
+  })),
+);
+---
+
+<Base title="Blogs I follow">
+  <h1>Blogs I follow</h1>
+  {
+    rendered.map(({ entry, Content }) => (
+      <div class="card">
+        <h3>
+          <a href={entry.data.url}>{entry.data.title}</a>
+        </h3>
+        <Content />
+      </div>
+    ))
+  }
+</Base>
