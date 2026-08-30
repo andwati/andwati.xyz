@@ -74,21 +74,32 @@ approved plan for full rationale on each decision referenced below.
 
 ## Content features carried over from the Zola site
 
-- [ ] Series-nav (multi-part post series)
-- [ ] Table of contents (inline + sidebar)
-- [ ] Prev/next post navigation
-- [ ] Related posts (tag-based)
-- [ ] Per-tag descriptions on tag archive pages
-- [ ] `llms_description` meta (site-wide + per-post override — schema
-      already supports the override)
-- [ ] RSS/JSON feeds
-- [ ] Sitemap + robots.txt
+- [x] Series-nav (multi-part post series) — `writings/[...slug].astro`,
+      uses the existing `extra.series`/`extra.series_index` fields
+- [x] Table of contents — inline only, no separate sidebar layout yet (that's
+      a design-system concern); heading ids + `headings` metadata now flow
+      through `toml-content-loader.ts` so `render(entry)` exposes them
+- [x] Prev/next post navigation
+- [x] Related posts (tag-based, tag-overlap ranked, limit 3)
+- [x] Per-tag descriptions on tag archive pages — `/tags/` + `/tags/[tag]/`,
+      descriptions ported from `zola.toml`'s `[extra.tag_descriptions]`
+- [x] `llms_description` meta (site-wide default in `site.config.ts` +
+      per-post override, rendered as `<meta name="description">` in
+      `Base.astro`)
+- [x] RSS/JSON feeds — `/rss.xml`, `/feed.json`
+- [x] Sitemap + robots.txt — `@astrojs/sitemap`, static `public/robots.txt`
 
 ## Search & comments
 
-- [ ] Pagefind integration (static search index from the Astro build output)
-- [ ] Webmentions integration (replacing Utterances) — decide self-hosted
-      endpoint vs. webmention.io
+- [x] Pagefind integration — indexes the build output (`pnpm build` runs
+      `astro build && pagefind --site dist`), `/search/` page using
+      Pagefind's default UI; verified with a real query in a browser
+- [ ] Webmentions integration (replacing Utterances) — **plumbing only**:
+      `Base.astro` links `rel="webmention"` to a webmention.io endpoint for
+      `andwati.com`, but nothing displays received mentions yet, and the
+      endpoint won't receive anything until the domain is actually
+      registered/verified on webmention.io (**needs your input**: create an
+      account, verify domain ownership, then I can build the display side)
 
 ## Analytics
 
