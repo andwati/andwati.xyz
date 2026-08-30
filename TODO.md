@@ -44,9 +44,15 @@ approved plan for full rationale on each decision referenced below.
       `cover_image` stays manually-set for papers (or gets one later from
       the OG-image pipeline below)
 - [ ] OG image auto-generation extended from the legacy per-post script to
-      all three content types (writings, portfolio, bookshelf)
+      all three content types (writings, portfolio, bookshelf) — **blocked
+      on the design system**: `scripts/generate-og-images.mjs` is hard-coded
+      to the old "CASE FILE" hacker-terminal branding being fully replaced;
+      building this now would just be redone once the new visual identity
+      lands
 - [ ] `llms.txt` generation extended to cover all content types, not just
-      posts
+      posts — **blocked on site config**: `scripts/generate-llms.mjs` reads
+      site metadata (base_url, description, nav) from `zola.toml`, which has
+      no equivalent yet in the new site (Astro site config isn't decided)
 
 ## Design system
 
