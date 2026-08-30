@@ -112,7 +112,8 @@ approved plan for full rationale on each decision referenced below.
 ## Analytics
 
 - [ ] Stand up Plausible or Umami on the Dokploy host, wire up tracking
-      snippet (replacing Google Analytics)
+      snippet (replacing Google Analytics) — **needs your input**: requires
+      your Dokploy access, not something I can provision from the repo
 
 ## Migration from the legacy Zola site
 
@@ -137,11 +138,14 @@ approved plan for full rationale on each decision referenced below.
 
 ## Infra / deployment
 
-- [ ] Wire Strapi into the Dokploy deployment alongside the Astro build
+- [ ] Wire Strapi into the Dokploy deployment alongside the Astro build —
+      **needs your input**: requires your Dokploy access
 - [ ] Decide build trigger: webhook on Strapi publish → CI rebuild, vs.
-      manual/scheduled rebuild
+      manual/scheduled rebuild — **needs your input**: your call, not an
+      engineering constraint either way
 - [ ] Update `Dockerfile`/`sws.toml` for the new build output (currently
-      Zola-specific)
+      Zola-specific) — holding off until the migration/cutover is actually
+      ready to ship, so this doesn't drift out of sync in the meantime
 
 ## Cleanup
 
