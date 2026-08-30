@@ -1,0 +1,26 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+
+const writings = await getCollection("writings", ({ data }) => !data.draft);
+const tagCounts = new Map<string, number>();
+for (const w of writings) {
+  for (const tag of w.data.taxonomies?.tags ?? []) {
+    tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+  }
+}
+const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+---
+
+<Base title="All Tags">
+  <h1>All Tags</h1>
+  <ul>
+    {
+      tags.map(([tag, count]) => (
+        <li>
+          <a href={`/tags/${tag}/`}>{tag}</a> ({count})
+        </li>
+      ))
+    }
+  </ul>
+</Base>

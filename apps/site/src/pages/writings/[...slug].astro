@@ -11,17 +11,107 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const { Content } = await render(entry);
+const { Content, headings } = await render(entry);
+
+const allWritings = (
+  await getCollection("writings", ({ data }) => !data.draft)
+).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+const index = allWritings.findIndex((w) => w.id === entry.id);
+const prev = index > 0 ? allWritings[index - 1] : undefined;
+const next =
+  index < allWritings.length - 1 ? allWritings[index + 1] : undefined;
+
+const series = entry.data.extra?.series;
+const seriesEntries = series
+  ? allWritings
+      .filter((w) => w.data.extra?.series === series)
+      .sort(
+        (a, b) =>
+          (a.data.extra?.series_index ?? 0) - (b.data.extra?.series_index ?? 0),
+      )
+  : [];
+
+const tags = entry.data.taxonomies?.tags ?? [];
+const related = tags.length
+  ? allWritings
+      .filter((w) => w.id !== entry.id)
+      .map((w) => ({
+        entry: w,
+        overlap: (w.data.taxonomies?.tags ?? []).filter((t) => tags.includes(t))
+          .length,
+      }))
+      .filter((w) => w.overlap > 0)
+      .sort((a, b) => b.overlap - a.overlap)
+      .slice(0, 3)
+      .map((w) => w.entry)
+  : [];
+
+const description =
+  entry.data.extra?.llms_description ?? entry.data.description;
+const tocHeadings = headings.filter((h) => h.depth <= 3);
 ---
 
-<Base title={entry.data.title}>
+<Base title={entry.data.title} description={description}>
   <h1>{entry.data.title}</h1>
   <p class="meta">
     {entry.data.date.toDateString()}
     {entry.data.updated && <> · updated {entry.data.updated.toDateString()}</>}
   </p>
-  {entry.data.taxonomies?.tags.map((tag) => <span class="tag">#{tag}</span>)}
+  {tags.map((tag) => <a class="tag" href={`/tags/${tag}/`}>#{tag}</a>)}
+
+  {
+    series && (
+      <nav class="series-nav" aria-label={`Post series: ${series}`}>
+        <p class="meta">
+          Series: {series} ({(entry.data.extra?.series_index ?? 0)} / {seriesEntries.length})
+        </p>
+        <ol>
+          {seriesEntries.map((w) => (
+            <li aria-current={w.id === entry.id ? "page" : undefined}>
+              <a href={`/writings/${w.id}/`}>{w.data.title}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )
+  }
+
+  {
+    tocHeadings.length > 0 && (
+      <nav class="toc" aria-label="Table of contents">
+        <p class="meta">Table of Contents</p>
+        <ul>
+          {tocHeadings.map((h) => (
+            <li style={{ marginLeft: `${(h.depth - 2) * 1}rem` }}>
+              <a href={`#${h.slug}`}>{h.text}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+
   <article>
     <Content />
   </article>
+
+  <nav class="post-nav" aria-label="Post navigation">
+    {prev && <a href={`/writings/${prev.id}/`}>← {prev.data.title}</a>}
+    {next && <a href={`/writings/${next.id}/`}>{next.data.title} →</a>}
+  </nav>
+
+  {
+    related.length > 0 && (
+      <section>
+        <h2>Related Posts</h2>
+        {related.map((w) => (
+          <div class="card">
+            <h3>
+              <a href={`/writings/${w.id}/`}>{w.data.title}</a>
+            </h3>
+          </div>
+        ))}
+      </section>
+    )
+  }
 </Base>

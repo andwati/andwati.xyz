@@ -1,0 +1,35 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { siteConfig } from "../../site.config";
+
+export async function getStaticPaths() {
+  const writings = await getCollection("writings", ({ data }) => !data.draft);
+  const tags = new Set<string>();
+  for (const w of writings) {
+    for (const t of w.data.taxonomies?.tags ?? []) tags.add(t);
+  }
+  return [...tags].map((tag) => ({ params: { tag }, props: { tag } }));
+}
+
+const { tag } = Astro.props;
+const writings = (await getCollection("writings", ({ data }) => !data.draft))
+  .filter((w) => (w.data.taxonomies?.tags ?? []).includes(tag))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+const description = siteConfig.tagDescriptions[tag];
+---
+
+<Base title={`#${tag}`} description={description}>
+  <h1>#{tag}</h1>
+  {description && <p>{description}</p>}
+  {
+    writings.map((entry) => (
+      <div class="card">
+        <h3>
+          <a href={`/writings/${entry.id}/`}>{entry.data.title}</a>
+        </h3>
+        <p class="meta">{entry.data.date.toDateString()}</p>
+      </div>
+    ))
+  }
+</Base>

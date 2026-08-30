@@ -1,10 +1,38 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import type { Loader } from "astro/loaders";
-import { marked } from "marked";
+import { Marked } from "marked";
 import { parse as parseToml } from "smol-toml";
 
 const FRONTMATTER_RE = /^\+\+\+\r?\n([\s\S]*?)\r?\n\+\+\+\r?\n?([\s\S]*)$/;
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Collects headings for the file currently being parsed (reset before each
+// `marked.parse()` call below) so Astro's `render(entry)` can expose them
+// as `headings`, matching the shape a built-in markdown loader would give.
+let currentHeadings: Heading[] = [];
+
+const marked = new Marked({
+  renderer: {
+    heading(token) {
+      const slug = slugify(token.text);
+      currentHeadings.push({ depth: token.depth, slug, text: token.text });
+      return `<h${token.depth} id="${slug}">${token.text}</h${token.depth}>`;
+    },
+  },
+});
 
 function walk(dir: string): string[] {
   const out: string[] = [];
@@ -51,8 +79,13 @@ export function tomlContentLoader(contentDir: string): Loader {
         const data = parseToml(frontmatter) as Record<string, unknown>;
         const relPath = relative(dirUrl.pathname, file);
         const id = relPath.replace(/\/index\.md$/, "").replace(/\.md$/, "");
+        currentHeadings = [];
         const html = await marked.parse(body.trim());
-        store.set({ id, data, rendered: { html } });
+        store.set({
+          id,
+          data,
+          rendered: { html, metadata: { headings: currentHeadings } },
+        });
       }
     },
   };
