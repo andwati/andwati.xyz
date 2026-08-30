@@ -1,0 +1,14 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Page Fault" description="404 — this page is not mapped in this process's address space.">
+  <h1>Page Fault</h1>
+  <p class="meta">SIGSEGV — the address you requested was never mapped.</p>
+  <p>
+    Whatever used to live here has been moved, renamed, or never existed in
+    this address space to begin with. Unlike a real page fault, there's no
+    handler that's going to page this back in for you.
+  </p>
+  <p><a href="/">Return to a valid address →</a></p>
+</Base>
