@@ -17,6 +17,7 @@
     "@biomejs/biome": "^2.5.11",
     "@resvg/resvg-js": "^2.6.2",
     "satori": "^0.29.0",
+    "smol-toml": "^1.8.0",
     "wawoff2": "^2.0.1"
   }
 }

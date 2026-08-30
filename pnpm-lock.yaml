@@ -17,6 +17,9 @@ importers:
       satori:
         specifier: ^0.29.0
         version: 0.29.1
+      smol-toml:
+        specifier: ^1.8.0
+        version: 1.8.0
       wawoff2:
         specifier: ^2.0.1
         version: 2.0.1
