@@ -1,20 +1,20 @@
-// import type { Core } from '@strapi/strapi';
+import type { Core } from "@strapi/strapi";
+import {
+  importContentFromDisk,
+  registerContentSync,
+} from "./utils/content-sync";
 
 export default {
-  /**
-   * An asynchronous register function that runs before
-   * your application is initialized.
-   *
-   * This gives you an opportunity to extend code.
-   */
-  register(/* { strapi }: { strapi: Core.Strapi } */) {},
+  register() {},
 
   /**
-   * An asynchronous bootstrap function that runs before
-   * your application gets started.
-   *
-   * This gives you an opportunity to set up your data model,
-   * run jobs, or perform some special logic.
+   * content/ is the source of truth (see content/README.md). On boot we
+   * import every file into Strapi's DB (a disposable cache), then register
+   * a Document Service middleware that writes any create/update/delete made
+   * through Strapi straight back to the same files.
    */
-  bootstrap(/* { strapi }: { strapi: Core.Strapi } */) {},
+  async bootstrap({ strapi }: { strapi: Core.Strapi }) {
+    registerContentSync(strapi as never);
+    await importContentFromDisk(strapi as never);
+  },
 };

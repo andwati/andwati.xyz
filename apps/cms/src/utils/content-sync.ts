@@ -1,0 +1,320 @@
+import { join } from "node:path";
+import {
+  deleteEntry,
+  readAllEntries,
+  toTomlDate,
+  writeEntry,
+} from "./content-file";
+
+type Layout = "nested" | "flat";
+
+interface SyncConfig {
+  uid: string;
+  dir: string;
+  layout: Layout;
+  /** Strapi entry -> { frontmatter, body } written to disk. */
+  toFile: (entry: Record<string, unknown>) => {
+    frontmatter: Record<string, unknown>;
+    body: string;
+  };
+  /** Parsed file -> Strapi entry fields, for importing content/ into Strapi on boot. */
+  toEntry: (
+    slug: string,
+    frontmatter: Record<string, unknown>,
+    body: string,
+  ) => Record<string, unknown>;
+}
+
+const isoDate = (value: unknown): string | undefined =>
+  value instanceof Date
+    ? value.toISOString().slice(0, 10)
+    : typeof value === "string"
+      ? value
+      : undefined;
+
+function contentRoot(): string {
+  // apps/cms -> repo root/content (also the mount point in the dev container)
+  return join(process.cwd(), "..", "..", "content");
+}
+
+function buildConfigs(): Record<string, SyncConfig> {
+  const root = contentRoot();
+
+  const writing: SyncConfig = {
+    uid: "api::writing.writing",
+    dir: join(root, "writings"),
+    layout: "nested",
+    toFile: (e) => ({
+      frontmatter: {
+        title: e.title,
+        description: e.description,
+        author: e.author,
+        date: toTomlDate(e.date as string),
+        updated: toTomlDate(e.updated as string),
+        draft: e.draft ?? false,
+        canonical_url: e.canonical_url,
+        taxonomies: { tags: e.tags ?? [] },
+        extra: {
+          series: e.series,
+          series_index: e.series_index,
+          llms_description: e.llms_description,
+        },
+      },
+      body: (e.body as string) ?? "",
+    }),
+    toEntry: (slug, fm, body) => {
+      const taxonomies = fm.taxonomies as { tags?: string[] } | undefined;
+      const extra = fm.extra as
+        | { series?: string; series_index?: number; llms_description?: string }
+        | undefined;
+      return {
+        slug,
+        title: fm.title,
+        description: fm.description,
+        author: fm.author,
+        date: isoDate(fm.date),
+        updated: isoDate(fm.updated),
+        draft: fm.draft ?? false,
+        canonical_url: fm.canonical_url,
+        tags: taxonomies?.tags ?? [],
+        series: extra?.series,
+        series_index: extra?.series_index,
+        llms_description: extra?.llms_description,
+        body,
+      };
+    },
+  };
+
+  const portfolioEntry: SyncConfig = {
+    uid: "api::portfolio-entry.portfolio-entry",
+    dir: join(root, "portfolio"),
+    layout: "flat",
+    toFile: (e) => ({
+      frontmatter: {
+        title: e.title,
+        description: e.description,
+        role: e.role,
+        date_start: toTomlDate(e.date_start as string),
+        date_end: toTomlDate(e.date_end as string),
+        outcome: e.outcome,
+        draft: e.draft ?? false,
+        links: e.links ?? [],
+        taxonomies: { tags: e.tags ?? [] },
+      },
+      body: (e.body as string) ?? "",
+    }),
+    toEntry: (slug, fm, body) => {
+      const taxonomies = fm.taxonomies as { tags?: string[] } | undefined;
+      return {
+        slug,
+        title: fm.title,
+        description: fm.description,
+        role: fm.role,
+        date_start: isoDate(fm.date_start),
+        date_end: isoDate(fm.date_end),
+        outcome: fm.outcome,
+        draft: fm.draft ?? false,
+        links: fm.links ?? [],
+        tags: taxonomies?.tags ?? [],
+        body,
+      };
+    },
+  };
+
+  const bookshelfEntry: SyncConfig = {
+    uid: "api::bookshelf-entry.bookshelf-entry",
+    dir: join(root, "bookshelf"),
+    layout: "flat",
+    toFile: (e) => ({
+      frontmatter: {
+        title: e.title,
+        kind: e.kind,
+        authors: e.authors ?? [],
+        isbn: e.isbn,
+        doi: e.doi,
+        arxiv_id: e.arxiv_id,
+        url: e.url,
+        cover_image: e.cover_image,
+        rating: e.rating,
+        status: e.status,
+        date_started: toTomlDate(e.date_started as string),
+        date_finished: toTomlDate(e.date_finished as string),
+        taxonomies: { tags: e.tags ?? [] },
+      },
+      body: (e.body as string) ?? "",
+    }),
+    toEntry: (slug, fm, body) => {
+      const taxonomies = fm.taxonomies as { tags?: string[] } | undefined;
+      return {
+        slug,
+        title: fm.title,
+        kind: fm.kind,
+        authors: fm.authors ?? [],
+        isbn: fm.isbn,
+        doi: fm.doi,
+        arxiv_id: fm.arxiv_id,
+        url: fm.url,
+        cover_image: fm.cover_image,
+        rating: fm.rating,
+        status: fm.status,
+        date_started: isoDate(fm.date_started),
+        date_finished: isoDate(fm.date_finished),
+        tags: taxonomies?.tags ?? [],
+        body,
+      };
+    },
+  };
+
+  const curatedBlog: SyncConfig = {
+    uid: "api::curated-blog.curated-blog",
+    dir: join(root, "blogs"),
+    layout: "flat",
+    toFile: (e) => ({
+      frontmatter: {
+        title: e.title,
+        url: e.url,
+        feed_url: e.feed_url,
+      },
+      body: (e.body as string) ?? "",
+    }),
+    toEntry: (slug, fm, body) => ({
+      slug,
+      title: fm.title,
+      url: fm.url,
+      feed_url: fm.feed_url,
+      body,
+    }),
+  };
+
+  return {
+    [writing.uid]: writing,
+    [portfolioEntry.uid]: portfolioEntry,
+    [bookshelfEntry.uid]: bookshelfEntry,
+    [curatedBlog.uid]: curatedBlog,
+  };
+}
+
+export const SYNC_CONFIGS = buildConfigs();
+
+/** Guards the outbound (DB -> file) middleware while the inbound (file -> DB) import runs. */
+let importing = false;
+
+function writeEntryForConfig(
+  config: SyncConfig,
+  entry: Record<string, unknown>,
+): void {
+  const slug = entry.slug as string | undefined;
+  if (!slug) return;
+  const { frontmatter, body } = config.toFile(entry);
+  writeEntry(config.dir, slug, config.layout, frontmatter, body);
+}
+
+/**
+ * On boot, upserts every file under content/<type>/ into Strapi so the admin
+ * UI reflects on-disk edits made outside Strapi. Strapi's DB stays a
+ * disposable cache: this can always rebuild it from content/ alone.
+ */
+export async function importContentFromDisk(strapi: {
+  documents: (uid: string) => {
+    findFirst: (params: {
+      filters: Record<string, unknown>;
+    }) => Promise<Record<string, unknown> | null>;
+    create: (params: { data: Record<string, unknown> }) => Promise<unknown>;
+    update: (params: {
+      documentId: string;
+      data: Record<string, unknown>;
+    }) => Promise<unknown>;
+  };
+  log: { info: (msg: string) => void; error: (msg: string) => void };
+}): Promise<void> {
+  importing = true;
+  try {
+    for (const config of Object.values(SYNC_CONFIGS)) {
+      const files = readAllEntries(config.dir);
+      let created = 0;
+      let updated = 0;
+      for (const { slug, frontmatter, body } of files) {
+        const data = config.toEntry(slug, frontmatter, body);
+        try {
+          const existing = await strapi
+            .documents(config.uid)
+            .findFirst({ filters: { slug } });
+          if (existing) {
+            await strapi
+              .documents(config.uid)
+              .update({ documentId: existing.documentId as string, data });
+            updated += 1;
+          } else {
+            await strapi.documents(config.uid).create({ data });
+            created += 1;
+          }
+        } catch (err) {
+          strapi.log.error(
+            `content-sync: failed to import ${config.dir}/${slug}: ${(err as Error).message}`,
+          );
+        }
+      }
+      strapi.log.info(
+        `content-sync: imported ${config.uid} (${created} created, ${updated} updated, ${files.length} total)`,
+      );
+    }
+  } finally {
+    importing = false;
+  }
+}
+
+/** Registers the outbound (DB -> file) sync as a Document Service middleware. */
+export function registerContentSync(strapi: {
+  documents: {
+    use: (
+      middleware: (
+        ctx: { uid: string; action: string; params: Record<string, unknown> },
+        next: () => Promise<unknown>,
+      ) => Promise<unknown>,
+    ) => void;
+    (
+      uid: string,
+    ): {
+      findOne: (params: {
+        documentId: string;
+      }) => Promise<Record<string, unknown> | null>;
+    };
+  };
+  log: { info: (msg: string) => void; error: (msg: string) => void };
+}): void {
+  strapi.documents.use(async (ctx, next) => {
+    const config = SYNC_CONFIGS[ctx.uid];
+    if (!config || importing) return next();
+
+    let preDeleteSlug: string | undefined;
+    if (ctx.action === "delete") {
+      const documentId = (ctx.params as { documentId?: string }).documentId;
+      if (documentId) {
+        const existing = await strapi
+          .documents(ctx.uid)
+          .findOne({ documentId });
+        preDeleteSlug = existing?.slug as string | undefined;
+      }
+    }
+
+    const result = await next();
+
+    try {
+      if (
+        (ctx.action === "create" || ctx.action === "update") &&
+        result &&
+        typeof result === "object"
+      ) {
+        writeEntryForConfig(config, result as Record<string, unknown>);
+      } else if (ctx.action === "delete" && preDeleteSlug) {
+        deleteEntry(config.dir, preDeleteSlug, config.layout);
+      }
+    } catch (err) {
+      strapi.log.error(
+        `content-sync: failed to write ${ctx.uid} to disk: ${(err as Error).message}`,
+      );
+    }
+
+    return result;
+  });
+}
