@@ -7,7 +7,13 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["apps/**", "scripts/**", "!apps/**/dist/**", "!apps/**/.strapi/**", "!apps/**/public/**"]
+    "includes": [
+      "apps/**",
+      "scripts/**",
+      "!apps/**/dist",
+      "!apps/**/.strapi",
+      "!apps/**/public"
+    ]
   },
   "formatter": {
     "enabled": true,
