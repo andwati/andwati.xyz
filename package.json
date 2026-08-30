@@ -1,14 +1,22 @@
 {
   "name": "andwati-com",
   "private": true,
+  "type": "module",
+  "scripts": {
+    "dev:site": "pnpm --filter site dev",
+    "dev:cms": "pnpm --filter cms develop",
+    "build:site": "pnpm --filter site build",
+    "build:cms": "pnpm --filter cms build",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "legacy:generate:llms": "node scripts/generate-llms.mjs",
+    "legacy:generate:og": "node scripts/generate-og-images.mjs",
+    "legacy:build": "npm run legacy:generate:llms && npm run legacy:generate:og && zola build"
+  },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.11",
     "@resvg/resvg-js": "^2.6.2",
     "satori": "^0.29.0",
     "wawoff2": "^2.0.1"
-  },
-  "scripts": {
-    "generate:llms": "node scripts/generate-llms.mjs",
-    "generate:og": "node scripts/generate-og-images.mjs",
-    "build": "npm run generate:llms && npm run generate:og && zola build"
   }
 }

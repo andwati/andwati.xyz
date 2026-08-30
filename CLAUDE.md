@@ -49,10 +49,16 @@ Deployment is self-hosted via Dokploy: `Dockerfile` builds the site with Zola an
 
 All site-wide behavior/config (analytics, author/profile info, social links, nav menu, Utterances comment settings, search, related posts, the 404 terminal-themed easter egg) is centralized in `zola.toml` under `[extra]`. Check there before hardcoding values in templates.
 
+## Astro/Strapi migration (in progress, `astro-migration` branch)
+
+The site is being rebuilt as a pnpm workspace with two apps: `apps/site` (Astro) and `apps/cms` (Strapi, SQLite-backed). Package management is **pnpm only** (no npm/yarn) and linting/formatting is **Biome** (`pnpm lint`, `pnpm lint:fix`) — not ESLint/Prettier. Markdown files under `content/` remain the canonical source of truth; Strapi is an editing UI over them, not the source of record. The existing Zola site (`zola.toml`, `templates/`, `sass/`, `content/posts/` etc.) stays in place until migration is complete — remove Zola-specific files progressively as their Astro/Strapi equivalents land, not all at once.
+
 ## Agent skills
 
 `.agents/skills/` contains pulled-in skills (`animation-vocabulary`, `emil-design-eng`, `review-animations`) tracked via `skills-lock.json`, useful for UI/animation review and design-engineering guidance when touching templates or Sass.
 
 ## Git commits
 
-Never add `Co-Authored-By: Claude` (or any other Claude/Anthropic self-attribution) to commit messages. Write commit messages as if authored solely by the user.
+Never add `Co-Authored-By: Claude` (or any other Claude/Anthropic self-attribution) to commit messages or pull request descriptions/titles. Write commit messages and PRs as if authored solely by the user.
+
+Commit regularly: after each successful, working step (not just at the end of a task), so history stays granular and revertible.
