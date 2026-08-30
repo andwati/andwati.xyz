@@ -484,8 +484,8 @@ export interface ApiBookshelfEntryBookshelfEntry
         },
         number
       >;
+    read_status: Schema.Attribute.Enumeration<['reading', 'read', 'abandoned']>;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
-    status: Schema.Attribute.Enumeration<['reading', 'read', 'abandoned']>;
     tags: Schema.Attribute.JSON;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;

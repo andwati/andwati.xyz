@@ -58,7 +58,7 @@ const bookshelf = defineCollection({
     url: z.string().optional(),
     cover_image: z.string().optional(),
     rating: z.number().optional(),
-    status: z.enum(["reading", "read", "abandoned"]).optional(),
+    read_status: z.enum(["reading", "read", "abandoned"]).optional(),
     date_started: z.coerce.date().optional(),
     date_finished: z.coerce.date().optional(),
     taxonomies,

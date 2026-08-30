@@ -19,7 +19,7 @@ const items = (await getCollection("bookshelf")).sort(
         </h3>
         <p class="meta">{entry.data.authors.join(", ")}</p>
         {entry.data.rating && <p class="meta">{"★".repeat(entry.data.rating)}</p>}
-        {entry.data.status && <p class="meta">{entry.data.status}</p>}
+        {entry.data.read_status && <p class="meta">{entry.data.read_status}</p>}
         {entry.data.kind === "book" && entry.data.isbn && <p class="meta">ISBN {entry.data.isbn}</p>}
         {entry.data.kind === "paper" && entry.data.arxiv_id && (
           <p class="meta">

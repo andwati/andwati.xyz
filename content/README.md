@@ -59,9 +59,17 @@ Body is a free-form Markdown case study.
 ## `bookshelf/` (books *and* papers)
 
 `kind` selects which identifier fields apply — books use `isbn`, papers use
-`doi`/`arxiv_id`. Cover images are fetched by a lookup (Open Library/Google
-Books for ISBNs; Semantic Scholar/arXiv for papers) and cached under
-`static/covers/`, never fetched at page-render time.
+`doi`/`arxiv_id`. Book covers are fetched from Open Library by ISBN and
+cached into `apps/site/public/covers/` (served at `/covers/...`), never
+fetched at page-render time. Papers have no reliable cover source, so
+`cover_image` is set manually for them, if at all; Semantic Scholar is only
+used to backfill a missing title/authors by DOI/arXiv id.
+
+Note: the field is named `read_status`, not `status` — Strapi's
+content-manager API treats a top-level `status` key as its own reserved
+draft/publish parameter even with `draftAndPublish` disabled, so an
+attribute literally named `status` silently breaks writes. Don't rename it
+back.
 
 ```toml
 +++
@@ -74,7 +82,7 @@ arxiv_id = "2101.00001"     # papers only, optional
 url = "https://..."         # papers only: landing page / source link
 cover_image = "/covers/slug.jpg"
 rating = 5                  # optional, 1-5
-status = "read"             # "reading" | "read" | "abandoned"
+read_status = "read"        # "reading" | "read" | "abandoned"
 date_started = 2026-01-01
 date_finished = 2026-01-20  # optional, omit if still in progress
 [taxonomies]

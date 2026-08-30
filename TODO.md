@@ -27,14 +27,22 @@ approved plan for full rationale on each decision referenced below.
 
 ## Content pipeline
 
-- [ ] Strapi custom provider/lifecycle hooks that read + write the same
-      Markdown files in `content/` (Strapi's DB stays a disposable cache)
-- [ ] Verify round-trip: edit in Strapi admin → file on disk updates, and
-      vice versa, without drift
-- [ ] Bookshelf ISBN lookup hook (Open Library / Google Books) with local
-      cover caching
-- [ ] Bookshelf paper lookup hook (Semantic Scholar / arXiv) with local
-      cover/thumbnail caching
+- [x] Strapi custom provider/lifecycle hooks that read + write the same
+      Markdown files in `content/` (Strapi's DB stays a disposable cache) —
+      `apps/cms/src/utils/content-{file,sync}.ts`, wired in `src/index.ts`
+- [x] Verify round-trip: edit in Strapi admin → file on disk updates, and
+      vice versa, without drift — verified create/update/delete via the
+      content-manager API, plus idempotent re-import across a restart
+- [x] Bookshelf ISBN lookup hook with local cover caching —
+      `apps/cms/src/utils/bookshelf-covers.ts` fetches from Open Library by
+      ISBN and caches into `apps/site/public/covers/`; verified end-to-end
+      (real cover downloaded, `cover_image` synced to file, cleaned up on
+      delete)
+- [x] Bookshelf paper lookup hook — Semantic Scholar backfills title/authors
+      by DOI/arXiv id when missing. No cover/thumbnail: neither Semantic
+      Scholar nor arXiv offers a reliable image source for papers, so
+      `cover_image` stays manually-set for papers (or gets one later from
+      the OG-image pipeline below)
 - [ ] OG image auto-generation extended from the legacy per-post script to
       all three content types (writings, portfolio, bookshelf)
 - [ ] `llms.txt` generation extended to cover all content types, not just

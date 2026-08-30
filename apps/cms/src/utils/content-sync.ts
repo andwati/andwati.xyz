@@ -1,10 +1,13 @@
 import { join } from "node:path";
+import { fetchBookCover, fetchPaperMetadata } from "./bookshelf-covers";
 import {
   deleteEntry,
   readAllEntries,
   toTomlDate,
   writeEntry,
 } from "./content-file";
+
+const BOOKSHELF_UID = "api::bookshelf-entry.bookshelf-entry";
 
 type Layout = "nested" | "flat";
 
@@ -136,7 +139,7 @@ function buildConfigs(): Record<string, SyncConfig> {
         url: e.url,
         cover_image: e.cover_image,
         rating: e.rating,
-        status: e.status,
+        read_status: e.read_status,
         date_started: toTomlDate(e.date_started as string),
         date_finished: toTomlDate(e.date_finished as string),
         taxonomies: { tags: e.tags ?? [] },
@@ -156,7 +159,7 @@ function buildConfigs(): Record<string, SyncConfig> {
         url: fm.url,
         cover_image: fm.cover_image,
         rating: fm.rating,
-        status: fm.status,
+        read_status: fm.read_status,
         date_started: isoDate(fm.date_started),
         date_finished: isoDate(fm.date_finished),
         tags: taxonomies?.tags ?? [],
@@ -263,6 +266,60 @@ export async function importContentFromDisk(strapi: {
   }
 }
 
+interface DocumentsClient {
+  findOne: (params: {
+    documentId: string;
+  }) => Promise<Record<string, unknown> | null>;
+  update: (params: {
+    documentId: string;
+    data: Record<string, unknown>;
+  }) => Promise<Record<string, unknown>>;
+}
+
+/**
+ * Backfills a bookshelf entry's cover (books, via Open Library by ISBN) or
+ * missing title/authors (papers, via Semantic Scholar by DOI/arXiv id) the
+ * first time it's created/updated with an identifier but no cached cover.
+ * Runs once per entry: `cover_image` already set is treated as "done".
+ */
+async function enrichBookshelfEntry(
+  documents: (uid: string) => DocumentsClient,
+  entry: Record<string, unknown>,
+): Promise<Record<string, unknown>> {
+  if (entry.cover_image) return entry;
+
+  const slug = entry.slug as string;
+  const patch: Record<string, unknown> = {};
+
+  try {
+    if (entry.kind === "book" && entry.isbn) {
+      const cover = await fetchBookCover(entry.isbn as string, slug);
+      if (cover) patch.cover_image = cover;
+    } else if (entry.kind === "paper" && (entry.doi || entry.arxiv_id)) {
+      const meta = await fetchPaperMetadata({
+        doi: entry.doi as string | undefined,
+        arxivId: entry.arxiv_id as string | undefined,
+      });
+      if (meta?.title && !entry.title) patch.title = meta.title;
+      if (
+        meta?.authors?.length &&
+        !(entry.authors as string[] | undefined)?.length
+      ) {
+        patch.authors = meta.authors;
+      }
+    }
+  } catch {
+    // Network/API failures shouldn't block saving the entry itself.
+    return entry;
+  }
+
+  if (Object.keys(patch).length === 0) return entry;
+  return documents(BOOKSHELF_UID).update({
+    documentId: entry.documentId as string,
+    data: patch,
+  });
+}
+
 /** Registers the outbound (DB -> file) sync as a Document Service middleware. */
 export function registerContentSync(strapi: {
   documents: {
@@ -272,13 +329,7 @@ export function registerContentSync(strapi: {
         next: () => Promise<unknown>,
       ) => Promise<unknown>,
     ) => void;
-    (
-      uid: string,
-    ): {
-      findOne: (params: {
-        documentId: string;
-      }) => Promise<Record<string, unknown> | null>;
-    };
+    (uid: string): DocumentsClient;
   };
   log: { info: (msg: string) => void; error: (msg: string) => void };
 }): void {
@@ -305,7 +356,14 @@ export function registerContentSync(strapi: {
         result &&
         typeof result === "object"
       ) {
-        writeEntryForConfig(config, result as Record<string, unknown>);
+        const entry =
+          ctx.uid === BOOKSHELF_UID
+            ? await enrichBookshelfEntry(
+                strapi.documents,
+                result as Record<string, unknown>,
+              )
+            : (result as Record<string, unknown>);
+        writeEntryForConfig(config, entry);
       } else if (ctx.action === "delete" && preDeleteSlug) {
         deleteEntry(config.dir, preDeleteSlug, config.layout);
       }
