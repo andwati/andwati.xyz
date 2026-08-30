@@ -49,19 +49,27 @@ approved plan for full rationale on each decision referenced below.
       to the old "CASE FILE" hacker-terminal branding being fully replaced;
       building this now would just be redone once the new visual identity
       lands
-- [ ] `llms.txt` generation extended to cover all content types, not just
-      posts — **blocked on site config**: `scripts/generate-llms.mjs` reads
-      site metadata (base_url, description, nav) from `zola.toml`, which has
-      no equivalent yet in the new site (Astro site config isn't decided)
+- [x] `llms.txt` generation extended to cover all content types — unblocked
+      once `site.config.ts` existed (built above for feeds/meta anyway):
+      `scripts/generate-llms.astro-site.mjs` reads all four content
+      directories directly, wired into `apps/site`'s build script
 
 ## Design system
 
 - [ ] New typography scale + color system (full reset, not inherited from
-      `sass/_theme.scss`)
-- [ ] Motion primitives: CSS + native Web Animations API spring utility
-- [ ] Base layout/components replacing the placeholder `Base.astro`
-- [ ] Homepage redesign around the Three.js centerpiece as hero
-- [ ] New 404 page concept (terminal easter egg retired)
+      `sass/_theme.scss`) — **needs your input**: aesthetic/brand decisions,
+      not something to guess at
+- [x] Motion primitives: CSS + native Web Animations API spring utility —
+      `apps/site/src/lib/spring.ts` (damped-oscillator keyframes,
+      `prefers-reduced-motion` aware). Not wired into any component yet —
+      that comes with the design system below
+- [ ] Base layout/components replacing the placeholder `Base.astro` —
+      **needs your input**: depends on the typography/color decision above
+- [ ] Homepage redesign around the Three.js centerpiece as hero — **needs
+      your input**: depends on the constellation data model decision below
+- [x] New 404 page concept (terminal easter egg retired) — "Page Fault",
+      a SIGSEGV/memory-fault framing; plain/unstyled pending the design
+      system, same as the rest of the current placeholder layout
 
 ## Three.js centerpiece
 
@@ -108,12 +116,24 @@ approved plan for full rationale on each decision referenced below.
 
 ## Migration from the legacy Zola site
 
-- [ ] Script/process to convert `content/posts/*.md` into the new
-      `content/writings/` schema
-- [ ] Preserve slugs/URLs or add redirects (mechanism TBD — Astro
-      middleware vs. `static-web-server`/`sws.toml` rules)
-- [ ] Migrate `content/archive/`, `content/about.md` equivalents
-- [ ] Verify RSS subscribers and inbound links survive the cutover
+- [x] Script/process to convert `content/posts/*.md` into the new
+      `content/writings/` schema — `scripts/migrate-posts-to-writings.mjs`,
+      additive only (`content/posts/` untouched), re-runnable/idempotent.
+      2 of 20 posts (`from-c-to-machine-code`,
+      `self-hosting-gitea-and-mirroring-github`) use note/tip/warning/danger
+      callout shortcodes with no Astro equivalent yet — flagged by the
+      script, needs a real component once the design system exists
+      (**not blocking**, just noted for later)
+- [x] Preserve slugs/URLs via redirects — the script generates 301s from
+      `/posts/<slug>/` to `/writings/<slug>/` into `sws.toml`, idempotently
+- [ ] Migrate `content/archive/`, `content/about.md` equivalents — holding
+      off: the Astro site doesn't have archive/about pages built yet, and
+      "about" copy/framing is exactly the kind of thing you'd want to
+      review/rewrite for the new "digital legacy" identity, not port as-is
+- [ ] Verify RSS subscribers and inbound links survive the cutover — can
+      only really be checked once this is deployed live (**needs your
+      input**: this is a production-cutover verification, not a build-time
+      one)
 
 ## Infra / deployment
 

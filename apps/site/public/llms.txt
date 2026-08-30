@@ -1,0 +1,54 @@
+# Thoughts and Musings
+
+> Ian Andwati's personal digital-legacy site covering computer science, mathematics, life, and beliefs — writings, portfolio, and a curated bookshelf.
+
+## Main pages
+
+- [Home](https://andwati.com/): Introduction and latest writings.
+- [Writings](https://andwati.com/writings/): Long-form essays and technical posts.
+- [Portfolio](https://andwati.com/portfolio/): Projects and professional work.
+- [Bookshelf](https://andwati.com/bookshelf/): Books and papers read, with notes.
+- [Blogs](https://andwati.com/blogs/): Curated external blogs.
+- [Tags](https://andwati.com/tags/): Writings grouped by topic.
+
+## Writings
+
+- [What is pwn?](https://andwati.com/writings/what-is-pwn/): No not that one
+- [Export default and module.exports in Javascript](https://andwati.com/writings/javascript-exporting-modules/): Modules are the building blocks of modern JavaScript applications, allowing for the encapsulation of code into reusable components. Two primary systems govern the exportation of these modules: export default in ES6 and module.exports in CommonJS.
+- [cognitive inertia](https://andwati.com/writings/inertia/): inertia
+- [Self-Hosting Gitea and Automating GitHub Mirrors](https://andwati.com/writings/self-hosting-gitea-and-mirroring-github/): Self-Hosting Gitea and Automating GitHub Mirrors (and Everything Cloudflare Broke Along the Way)
+- [From C to Machine Code: What Actually Runs](https://andwati.com/writings/from-c-to-machine-code/): Before diving into how to break a program, we need to understand what the computer is actually executing
+- [Semantic Versioning(SemVer) and Conventional  Commits](https://andwati.com/writings/semantic-version-and-conventional-commits/): Adopting best practices in your git and build workflows.
+- [Integrating Netlify CMS](https://andwati.com/writings/integrating-netlify/): Integrating netlify cms
+- [Install PostgreSQL  on Arch | Manjaro | Garuda Linux](https://andwati.com/writings/install-postgresql-15-on-arch-manjaro-garuda-linux/): Getting PostgreSQL up and running on Arch Linux-based distros
+- [A Fresh Coat Of Paint](https://andwati.com/writings/a-fresh-coat-of-paint/): Migrating to Zola
+- [What say you?](https://andwati.com/writings/utterances-comments/): Adding a comment system by utterances
+- [The One Thing Nobody Tells You About WiFi Hotspots on Arch Linux](https://andwati.com/writings/wifi-hotspot-arch/): A minimal Arch install is great until NetworkManager silently fails to find a binary you didn't know you needed
+- [Setting up Obsidian sync in Windows](https://andwati.com/writings/obsidian-sync/): Syncing Obsidian in Windows with Windows Task Scheduler with git
+- [The Single Byte That Kills Your Exploit: Understanding Endianness](https://andwati.com/writings/the-single-byte-that-kills-your-exploit-understanding-endianness/): Problem: Computers speak different languages, like people
+- [Why This Site Exists](https://andwati.com/writings/example-first-post/): A short note on what this new site is, and why it's more than a tech blog.
+- [mmuctf 2025 writeup](https://andwati.com/writings/mmuctf2025/): mmuctf 2025 challenges writeup
+- [Configure Vue.js app With Tailwind CSS](https://andwati.com/writings/vuejs-tailwind/): Tailwindcss in vuejs
+- [Subresource Integrity](https://andwati.com/writings/subresource-integrity/): Understanding Subresource Integrity
+- [ScriptCTF 2025 Writeup](https://andwati.com/writings/scriptctf2025/): ScriptCTF 2025 Writeup
+- [Django Secret Key Tutorial](https://andwati.com/writings/generate-django-secret-key/): Managing secrets
+- [Hello World](https://andwati.com/writings/hello-world/): Hello world
+
+## Portfolio
+
+- [Example Project](https://andwati.com/portfolio/): Established the portfolio content schema.
+
+## Bookshelf
+
+- [Attention Is All You Need](https://andwati.com/bookshelf/): Ashish Vaswani, Noam Shazeer, Niki Parmar
+- [Structure and Interpretation of Computer Programs](https://andwati.com/bookshelf/): Harold Abelson, Gerald Jay Sussman
+
+## Blogs followed
+
+- [Example Blog](https://example.com)
+
+## Feeds and discovery
+
+- [RSS feed](https://andwati.com/rss.xml): Full writings feed in RSS format.
+- [JSON feed](https://andwati.com/feed.json): Full writings feed in JSON Feed format.
+- [Sitemap](https://andwati.com/sitemap-index.xml): Machine-readable index of public pages.
