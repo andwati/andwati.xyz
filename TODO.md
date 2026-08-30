@@ -16,11 +16,17 @@ approved plan for full rationale on each decision referenced below.
       end-to-end in-browser (`pnpm --filter site dev`)
 - [x] CLAUDE.md updated: no agent self-attribution in commits/PRs, commit
       regularly after each working step
+- [x] Strapi content-type definitions matching the `content/` schema exactly
+      (writings, portfolio, bookshelf, blogs) — verified boots and registers
+      all four REST routes
+- [x] `apps/cms/Dockerfile.dev` + root `docker-compose.yml` for running
+      Strapi locally in a container (node:24-bookworm-slim, matches local
+      Node version); `apps/cms/Dockerfile` production multi-stage build for
+      later Dokploy deployment. Verified: builds, boots, admin panel and API
+      reachable, shared `content/` volume mounted at the right relative path
 
 ## Content pipeline
 
-- [ ] Strapi content-type definitions matching the `content/` schema exactly
-      (writings, portfolio, bookshelf, blogs)
 - [ ] Strapi custom provider/lifecycle hooks that read + write the same
       Markdown files in `content/` (Strapi's DB stays a disposable cache)
 - [ ] Verify round-trip: edit in Strapi admin → file on disk updates, and

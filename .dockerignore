@@ -1,7 +1,11 @@
-public
+/public
 node_modules
 .git
 manimations/*.*
 /zola
 /zola-v*.tar.gz
 /artifacts
+dist
+.strapi
+.tmp
+build

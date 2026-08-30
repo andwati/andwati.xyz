@@ -1,0 +1,32 @@
+# Local-only convenience for running Strapi in a container while developing.
+# Not a production deployment manifest. Usage: docker compose up cms
+#
+# The dev credentials below are throwaway values for a local SQLite instance
+# only — never reuse them anywhere real.
+services:
+  cms:
+    build:
+      context: .
+      dockerfile: apps/cms/Dockerfile.dev
+    ports:
+      - "1337:1337"
+    environment:
+      HOST: 0.0.0.0
+      PORT: "1337"
+      NODE_ENV: development
+      APP_KEYS: devkey1,devkey2,devkey3,devkey4
+      API_TOKEN_SALT: dev-api-token-salt
+      ADMIN_JWT_SECRET: dev-admin-jwt-secret
+      TRANSFER_TOKEN_SALT: dev-transfer-token-salt
+      JWT_SECRET: dev-jwt-secret
+      ENCRYPTION_KEY: dev-encryption-key
+    volumes:
+      - ./apps/cms/src:/app/apps/cms/src
+      - ./apps/cms/config:/app/apps/cms/config
+      - ./apps/cms/public:/app/apps/cms/public
+      - ./apps/cms/database:/app/apps/cms/database
+      - ./content:/app/content
+      - cms_data:/app/apps/cms/.tmp
+
+volumes:
+  cms_data:
