@@ -32,6 +32,71 @@ export async function fetchBookCover(
   return `/covers/${slug}.jpg`;
 }
 
+/**
+ * Sniffs the actual file signature rather than trusting the Content-Type
+ * header — some CDNs (O'Reilly's included, observed while building this)
+ * mislabel WebP responses as image/jpeg, which would otherwise get a wrong
+ * extension and a mismatched Content-Type when we later serve it ourselves.
+ */
+function extensionFromBytes(buf: Buffer): string {
+  if (
+    buf.length >= 12 &&
+    buf.subarray(0, 4).toString("ascii") === "RIFF" &&
+    buf.subarray(8, 12).toString("ascii") === "WEBP"
+  ) {
+    return "webp";
+  }
+  if (
+    buf.length >= 8 &&
+    buf
+      .subarray(0, 8)
+      .equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))
+  ) {
+    return "png";
+  }
+  if (
+    buf.length >= 3 &&
+    buf[0] === 0xff &&
+    buf[1] === 0xd8 &&
+    buf[2] === 0xff
+  ) {
+    return "jpg";
+  }
+  if (
+    buf.length >= 6 &&
+    (buf.subarray(0, 6).toString("ascii") === "GIF87a" ||
+      buf.subarray(0, 6).toString("ascii") === "GIF89a")
+  ) {
+    return "gif";
+  }
+  return "jpg";
+}
+
+/**
+ * Downloads whatever image URL is at `url` (e.g. a cover_image the user
+ * pasted in by hand) and caches it locally, so the site never depends on
+ * that URL staying up. Used for any http(s) cover_image, not just ISBN
+ * lookups.
+ */
+export async function cacheRemoteImage(
+  url: string,
+  slug: string,
+): Promise<string | undefined> {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return undefined;
+    const buf = Buffer.from(await res.arrayBuffer());
+    if (buf.byteLength < 200) return undefined;
+    const ext = extensionFromBytes(buf);
+    const file = join(COVERS_DIR, `${slug}.${ext}`);
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(file, buf);
+    return `/covers/${slug}.${ext}`;
+  } catch {
+    return undefined;
+  }
+}
+
 interface PaperMetadata {
   title?: string;
   authors?: string[];

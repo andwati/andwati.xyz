@@ -1,5 +1,9 @@
 import { join } from "node:path";
-import { fetchBookCover, fetchPaperMetadata } from "./bookshelf-covers";
+import {
+  cacheRemoteImage,
+  fetchBookCover,
+  fetchPaperMetadata,
+} from "./bookshelf-covers";
 import {
   deleteEntry,
   readAllEntries,
@@ -277,35 +281,42 @@ interface DocumentsClient {
 }
 
 /**
- * Backfills a bookshelf entry's cover (books, via Open Library by ISBN) or
- * missing title/authors (papers, via Semantic Scholar by DOI/arXiv id) the
- * first time it's created/updated with an identifier but no cached cover.
- * Runs once per entry: `cover_image` already set is treated as "done".
+ * Backfills a bookshelf entry's cover — either by caching whatever URL is
+ * already in `cover_image` (e.g. one pasted in by hand, or an editor's own
+ * hosted cover) locally, or by looking one up (books via Open Library by
+ * ISBN) when there's no cover_image at all yet — and, for papers, missing
+ * title/authors via Semantic Scholar by DOI/arXiv id. Runs once per entry:
+ * a `cover_image` already pointing at a local /covers/... path is treated
+ * as "done" and left alone.
  */
 async function enrichBookshelfEntry(
   documents: (uid: string) => DocumentsClient,
   entry: Record<string, unknown>,
 ): Promise<Record<string, unknown>> {
-  if (entry.cover_image) return entry;
-
   const slug = entry.slug as string;
+  const coverImage = entry.cover_image as string | undefined;
   const patch: Record<string, unknown> = {};
 
   try {
-    if (entry.kind === "book" && entry.isbn) {
-      const cover = await fetchBookCover(entry.isbn as string, slug);
-      if (cover) patch.cover_image = cover;
-    } else if (entry.kind === "paper" && (entry.doi || entry.arxiv_id)) {
-      const meta = await fetchPaperMetadata({
-        doi: entry.doi as string | undefined,
-        arxivId: entry.arxiv_id as string | undefined,
-      });
-      if (meta?.title && !entry.title) patch.title = meta.title;
-      if (
-        meta?.authors?.length &&
-        !(entry.authors as string[] | undefined)?.length
-      ) {
-        patch.authors = meta.authors;
+    if (coverImage && /^https?:\/\//i.test(coverImage)) {
+      const cached = await cacheRemoteImage(coverImage, slug);
+      if (cached) patch.cover_image = cached;
+    } else if (!coverImage) {
+      if (entry.kind === "book" && entry.isbn) {
+        const cover = await fetchBookCover(entry.isbn as string, slug);
+        if (cover) patch.cover_image = cover;
+      } else if (entry.kind === "paper" && (entry.doi || entry.arxiv_id)) {
+        const meta = await fetchPaperMetadata({
+          doi: entry.doi as string | undefined,
+          arxivId: entry.arxiv_id as string | undefined,
+        });
+        if (meta?.title && !entry.title) patch.title = meta.title;
+        if (
+          meta?.authors?.length &&
+          !(entry.authors as string[] | undefined)?.length
+        ) {
+          patch.authors = meta.authors;
+        }
       }
     }
   } catch {
