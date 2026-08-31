@@ -1,4 +1,8 @@
 ---
+import "@fontsource-variable/fraunces";
+import "@fontsource-variable/newsreader";
+import "@fontsource/jetbrains-mono";
+import "../styles/global.css";
 import { siteConfig } from "../site.config";
 
 interface Props {
@@ -7,66 +11,145 @@ interface Props {
 }
 const { title, description } = Astro.props;
 const metaDescription = description ?? siteConfig.description;
+const currentPath = Astro.url.pathname;
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} — andwati.com</title>
+    <title>{title} — {siteConfig.title}</title>
     <meta name="description" content={metaDescription} />
     <link rel="alternate" type="application/rss+xml" title={siteConfig.title} href="/rss.xml" />
     <link rel="alternate" type="application/feed+json" title={siteConfig.title} href="/feed.json" />
     <link rel="webmention" href="https://webmention.io/andwati.com/webmention" />
+    <script is:inline>
+      // Runs before paint to avoid a flash of the wrong theme.
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          if (stored === "light" || stored === "dark") {
+            document.documentElement.setAttribute("data-theme", stored);
+          }
+        } catch {}
+      })();
+    </script>
     <style>
-      :root {
-        color-scheme: light dark;
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-4) var(--space-6);
+        padding-block: var(--space-6);
       }
-      body {
-        font-family: system-ui, sans-serif;
-        max-width: 42rem;
-        margin: 2rem auto;
-        padding: 0 1rem;
-        line-height: 1.6;
+      .site-name {
+        font-family: var(--font-mono);
+        font-size: var(--font-size-sm);
+        letter-spacing: 0.08em;
+        text-decoration: none;
+        color: var(--text);
       }
       nav {
         display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--space-5);
+      }
+      nav a {
+        font-family: var(--font-mono);
+        font-size: var(--font-size-sm);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        text-decoration: none;
+        color: var(--text-muted);
+        transition: color 0.2s var(--ease-out);
+      }
+      nav a:hover,
+      nav a[aria-current="page"] {
+        color: var(--accent);
+      }
+      #theme-toggle {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text-muted);
+        width: 2rem;
+        height: 2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-family: var(--font-mono);
         font-size: 0.9rem;
+        transition:
+          border-color 0.2s var(--ease-out),
+          color 0.2s var(--ease-out);
       }
-      .tag {
-        display: inline-block;
-        font-size: 0.8rem;
-        opacity: 0.7;
-        margin-right: 0.5rem;
+      #theme-toggle:hover {
+        border-color: var(--accent);
+        color: var(--accent);
       }
-      .card {
-        margin-bottom: 1.5rem;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid color-mix(in srgb, currentColor 15%, transparent);
+      main {
+        min-height: 60vh;
       }
-      .card h3 {
-        margin-bottom: 0.25rem;
+      footer {
+        margin-top: var(--space-8);
+        padding-block: var(--space-6);
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: var(--space-4);
       }
-      .meta {
-        font-size: 0.85rem;
-        opacity: 0.7;
+      footer nav {
+        gap: var(--space-4);
       }
     </style>
   </head>
   <body>
-    <nav>
-      <a href="/">Home</a>
-      <a href="/writings/">Writings</a>
-      <a href="/portfolio/">Portfolio</a>
-      <a href="/bookshelf/">Bookshelf</a>
-      <a href="/blogs/">Blogs</a>
-      <a href="/tags/">Tags</a>
-      <a href="/search/">Search</a>
-    </nav>
-    <main>
-      <slot />
-    </main>
+    <div class="container">
+      <header>
+        <a class="site-name" href="/">{siteConfig.author.toUpperCase()}</a>
+        <nav aria-label="Primary">
+          {
+            siteConfig.nav.map((item) => (
+              <a href={item.url} aria-current={currentPath.startsWith(item.url) ? "page" : undefined}>
+                {item.name}
+              </a>
+            ))
+          }
+          <a href="/tags/" aria-current={currentPath.startsWith("/tags/") ? "page" : undefined}>Tags</a>
+          <a href="/search/" aria-current={currentPath.startsWith("/search/") ? "page" : undefined}>Search</a>
+          <button id="theme-toggle" type="button" aria-label="Toggle color theme">◐</button>
+        </nav>
+      </header>
+      <main>
+        <slot />
+      </main>
+      <footer>
+        <p class="meta">© {new Date().getFullYear()} {siteConfig.author}</p>
+        <nav aria-label="Social">
+          <a href={siteConfig.social.github} class="meta" rel="me noopener" target="_blank">GitHub</a>
+          <a href={siteConfig.social.twitter} class="meta" rel="me noopener" target="_blank">Twitter</a>
+          <a href={siteConfig.social.youtube} class="meta" rel="me noopener" target="_blank">YouTube</a>
+          <a href={`mailto:${siteConfig.social.email}`} class="meta">Email</a>
+        </nav>
+      </footer>
+    </div>
+    <script is:inline>
+      document.getElementById("theme-toggle").addEventListener("click", function () {
+        var root = document.documentElement;
+        var current =
+          root.getAttribute("data-theme") ||
+          (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        var next = current === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        try {
+          localStorage.setItem("theme", next);
+        } catch {}
+      });
+    </script>
   </body>
 </html>

@@ -55,6 +55,7 @@ const tocHeadings = headings.filter((h) => h.depth <= 3);
   <h1>{entry.data.title}</h1>
   <p class="meta">
     {entry.data.date.toDateString()}
+    {entry.data.readingMinutes && <> · {entry.data.readingMinutes} min read</>}
     {entry.data.updated && <> · updated {entry.data.updated.toDateString()}</>}
   </p>
   {tags.map((tag) => <a class="tag" href={`/tags/${tag}/`}>#{tag}</a>)}

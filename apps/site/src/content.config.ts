@@ -18,6 +18,8 @@ const writings = defineCollection({
     updated: z.coerce.date().optional(),
     draft: z.boolean().default(false),
     canonical_url: z.string().optional(),
+    wordCount: z.number().optional(),
+    readingMinutes: z.number().optional(),
     taxonomies,
     extra: z
       .object({

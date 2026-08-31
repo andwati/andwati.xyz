@@ -13,7 +13,10 @@ const writings = (
     writings.map((entry) => (
       <div class="card">
         <h3><a href={`/writings/${entry.id}/`}>{entry.data.title}</a></h3>
-        <p class="meta">{entry.data.date.toDateString()}</p>
+        <p class="meta">
+          {entry.data.date.toDateString()}
+          {entry.data.readingMinutes && <> · {entry.data.readingMinutes} min read</>}
+        </p>
         {entry.data.description && <p>{entry.data.description}</p>}
         {entry.data.taxonomies?.tags.map((tag) => <a class="tag" href={`/tags/${tag}/`}>#{tag}</a>)}
       </div>

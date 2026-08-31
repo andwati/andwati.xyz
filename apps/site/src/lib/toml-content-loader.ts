@@ -19,6 +19,15 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+/** Strips inline markdown syntax for use as plain-text TOC labels/slugs. */
+function stripInlineMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/`(.*?)`/g, "$1")
+    .replace(/\[(.*?)\]\([^)]*\)/g, "$1");
+}
+
 // Collects headings for the file currently being parsed (reset before each
 // `marked.parse()` call below) so Astro's `render(entry)` can expose them
 // as `headings`, matching the shape a built-in markdown loader would give.
@@ -27,9 +36,11 @@ let currentHeadings: Heading[] = [];
 const marked = new Marked({
   renderer: {
     heading(token) {
-      const slug = slugify(token.text);
-      currentHeadings.push({ depth: token.depth, slug, text: token.text });
-      return `<h${token.depth} id="${slug}">${token.text}</h${token.depth}>`;
+      const plainText = stripInlineMarkdown(token.text);
+      const slug = slugify(plainText);
+      const html = this.parser.parseInline(token.tokens);
+      currentHeadings.push({ depth: token.depth, slug, text: plainText });
+      return `<h${token.depth} id="${slug}">${html}</h${token.depth}>`;
     },
   },
 });
@@ -80,10 +91,13 @@ export function tomlContentLoader(contentDir: string): Loader {
         const relPath = relative(dirUrl.pathname, file);
         const id = relPath.replace(/\/index\.md$/, "").replace(/\.md$/, "");
         currentHeadings = [];
-        const html = await marked.parse(body.trim());
+        const trimmedBody = body.trim();
+        const html = await marked.parse(trimmedBody);
+        const wordCount = trimmedBody.split(/\s+/).filter(Boolean).length;
+        const readingMinutes = Math.max(1, Math.round(wordCount / 200));
         store.set({
           id,
-          data,
+          data: { ...data, wordCount, readingMinutes },
           rendered: { html, metadata: { headings: currentHeadings } },
         });
       }

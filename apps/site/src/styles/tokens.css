@@ -1,0 +1,66 @@
+/**
+ * Design tokens. Dark-first (matches the reflective, slightly technical
+ * tone of the content), with a warm paper-toned light mode — not pure
+ * black/white either way, so the palette reads considered rather than
+ * default browser colors.
+ */
+:root {
+  --bg: #faf7f1;
+  --bg-elevated: #f1ece0;
+  --text: #1c1a15;
+  --text-muted: #6f6a5c;
+  --border: rgba(28, 26, 21, 0.12);
+  --accent: #d1502f;
+  --accent-muted: rgba(209, 80, 47, 0.12);
+
+  --font-display: "Fraunces Variable", ui-serif, Georgia, serif;
+  --font-body: "Newsreader Variable", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+
+  --font-size-sm: clamp(0.8rem, 0.77rem + 0.15vw, 0.875rem);
+  --font-size-base: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  --font-size-lg: clamp(1.125rem, 1.05rem + 0.35vw, 1.25rem);
+  --font-size-xl: clamp(1.375rem, 1.2rem + 0.8vw, 1.75rem);
+  --font-size-2xl: clamp(1.75rem, 1.4rem + 1.6vw, 2.5rem);
+  --font-size-3xl: clamp(2.25rem, 1.7rem + 2.6vw, 3.5rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  --radius-sm: 4px;
+  --radius-md: 10px;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d0d0b;
+    --bg-elevated: #171613;
+    --text: #ece7db;
+    --text-muted: #8e897b;
+    --border: rgba(236, 231, 219, 0.12);
+    --accent: #ff6b45;
+    --accent-muted: rgba(255, 107, 69, 0.15);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #0d0d0b;
+  --bg-elevated: #171613;
+  --text: #ece7db;
+  --text-muted: #8e897b;
+  --border: rgba(236, 231, 219, 0.12);
+  --accent: #ff6b45;
+  --accent-muted: rgba(255, 107, 69, 0.15);
+  color-scheme: dark;
+}

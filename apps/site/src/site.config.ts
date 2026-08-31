@@ -16,6 +16,12 @@ export const siteConfig = {
     { name: "Bookshelf", url: "/bookshelf/" },
     { name: "Blogs", url: "/blogs/" },
   ],
+  social: {
+    github: "https://github.com/andwati",
+    twitter: "https://twitter.com/andwati_",
+    youtube: "https://www.youtube.com/@pwnforfunandprofit",
+    email: "andwatiian@gmail.com",
+  },
   tagDescriptions: {
     linux:
       "Practical notes on running Arch-based Linux distributions, from WiFi hotspot quirks to database setup.",
