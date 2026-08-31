@@ -1,0 +1,54 @@
+---
+import { getCollection, render } from "astro:content";
+import BookSpines from "../../components/BookSpines.astro";
+import Base from "../../layouts/Base.astro";
+
+export async function getStaticPaths() {
+  const items = await getCollection("bookshelf");
+  return items.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const items = (await getCollection("bookshelf")).sort(
+  (a, b) =>
+    (b.data.date_finished?.valueOf() ?? 0) -
+    (a.data.date_finished?.valueOf() ?? 0),
+);
+---
+
+<Base title={entry.data.title} wide>
+  <BookSpines
+    items={items.map((e) => ({ slug: e.id, title: e.data.title, coverImage: e.data.cover_image }))}
+    activeSlug={entry.id}
+  />
+
+  <h1>{entry.data.title}</h1>
+  <p class="meta">
+    By: {entry.data.authors.join(", ")}
+    {entry.data.date_finished && <> · Read {entry.data.date_finished.toDateString()}</>}
+    {entry.data.rating && <> · {"★".repeat(entry.data.rating)}</>}
+  </p>
+  {entry.data.taxonomies?.tags.map((tag) => <a class="tag" href={`/tags/${tag}/`}>#{tag}</a>)}
+
+  <article>
+    <Content />
+  </article>
+
+  <p class="meta">
+    {entry.data.kind === "book" && entry.data.isbn && <>ISBN {entry.data.isbn}</>}
+    {entry.data.kind === "paper" && entry.data.arxiv_id && <>arXiv:{entry.data.arxiv_id}</>}
+    {entry.data.url && (
+      <>
+        {" "}
+        · <a href={entry.data.url}>source</a>
+      </>
+    )}
+  </p>
+
+  <a class="button" href="/bookshelf/">← Bookshelf</a>
+</Base>

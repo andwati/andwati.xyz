@@ -1,38 +1,92 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, render } from "astro:content";
+import BookSpines from "../../components/BookSpines.astro";
 import Base from "../../layouts/Base.astro";
+import { coverExists } from "../../lib/cover-exists";
+import { spineStyle } from "../../lib/spine-color";
 
 const items = (await getCollection("bookshelf")).sort(
   (a, b) =>
     (b.data.date_finished?.valueOf() ?? 0) -
     (a.data.date_finished?.valueOf() ?? 0),
 );
+
+const withBodies = await Promise.all(
+  items.map(async (entry) => ({
+    entry,
+    Content: (await render(entry)).Content,
+  })),
+);
 ---
 
-<Base title="Bookshelf">
+<Base title="Bookshelf" wide>
   <h1>Bookshelf</h1>
+
+  <BookSpines items={items.map((entry) => ({ slug: entry.id, title: entry.data.title, coverImage: entry.data.cover_image }))} />
+
   {
-    items.map((entry) => (
-      <div class="card">
-        <h3>
-          {entry.data.title} <span class="tag">{entry.data.kind}</span>
-        </h3>
-        <p class="meta">{entry.data.authors.join(", ")}</p>
-        {entry.data.rating && <p class="meta">{"★".repeat(entry.data.rating)}</p>}
-        {entry.data.read_status && <p class="meta">{entry.data.read_status}</p>}
-        {entry.data.kind === "book" && entry.data.isbn && <p class="meta">ISBN {entry.data.isbn}</p>}
-        {entry.data.kind === "paper" && entry.data.arxiv_id && (
-          <p class="meta">
-            arXiv:{entry.data.arxiv_id}
-            {entry.data.url && (
-              <>
-                {" "}
-                · <a href={entry.data.url}>source</a>
-              </>
+    withBodies.map(({ entry, Content }) => {
+      const style = spineStyle(entry.data.title);
+      return (
+        <div class="book-row">
+          <a href={`/bookshelf/${entry.id}/`} class="book-cover">
+            {coverExists(entry.data.cover_image) ? (
+              <img src={entry.data.cover_image} alt={entry.data.title} loading="lazy" />
+            ) : (
+              <span style={{ background: style.background, color: style.color }}>{entry.data.title}</span>
             )}
-          </p>
-        )}
-      </div>
-    ))
+          </a>
+          <div>
+            <h3>
+              <a href={`/bookshelf/${entry.id}/`}>{entry.data.title}</a> <span class="tag">{entry.data.kind}</span>
+            </h3>
+            <p class="meta">
+              {entry.data.authors.join(", ")}
+              {entry.data.date_finished && <> · Read {entry.data.date_finished.toDateString()}</>}
+              {entry.data.rating && <> · {"★".repeat(entry.data.rating)}</>}
+            </p>
+            <Content />
+          </div>
+        </div>
+      );
+    })
   }
 </Base>
+
+<style>
+  .book-row {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    gap: var(--space-5);
+    padding-block: var(--space-6);
+    border-bottom: 1px solid var(--border);
+  }
+  .book-cover {
+    display: block;
+    aspect-ratio: 2 / 3;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .book-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .book-cover span {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-2);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--font-size-sm);
+  }
+  @media (max-width: 32rem) {
+    .book-row {
+      grid-template-columns: 5rem 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,146 @@
+---
+import { coverExists } from "../lib/cover-exists";
+import { spineStyle } from "../lib/spine-color";
+
+interface Item {
+  slug: string;
+  title: string;
+  coverImage?: string;
+}
+
+interface Props {
+  items: Item[];
+  activeSlug?: string;
+}
+
+const { items, activeSlug } = Astro.props;
+---
+
+<div class="spines" data-spines>
+  <div class="spines-track" data-track>
+    {
+      items.map((item) => {
+        const active = item.slug === activeSlug;
+        const style = spineStyle(item.title);
+        return (
+          <a
+            href={`/bookshelf/${item.slug}/`}
+            class:list={["spine", { "spine--active": active }]}
+            style={active ? undefined : { background: style.background, color: style.color, width: `${style.width}px` }}
+            title={item.title}
+            aria-current={active ? "page" : undefined}
+          >
+            {active && coverExists(item.coverImage) ? (
+              <img src={item.coverImage} alt={item.title} loading="lazy" />
+            ) : active ? (
+              <span class="spine-cover-fallback" style={{ background: style.background, color: style.color }}>
+                {item.title}
+              </span>
+            ) : (
+              <span>{item.title}</span>
+            )}
+          </a>
+        );
+      })
+    }
+  </div>
+  <button type="button" class="spines-next" data-next aria-label="Scroll shelf right">→</button>
+</div>
+
+<style>
+  .spines {
+    position: relative;
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--border);
+  }
+  .spines-track {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding-bottom: var(--space-2);
+    scrollbar-width: thin;
+  }
+  .spine {
+    flex-shrink: 0;
+    height: 168px;
+    border-radius: 3px 3px 0 0;
+    text-decoration: none;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: var(--space-3) 0;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+    transition:
+      transform 0.2s var(--ease-out),
+      box-shadow 0.2s var(--ease-out);
+    overflow: hidden;
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.15);
+  }
+  .spine span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 100%;
+  }
+  .spine:hover {
+    transform: translateY(-8px);
+  }
+  .spine--active {
+    width: 112px;
+    padding: 0;
+    writing-mode: initial;
+  }
+  .spine--active img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 3px 3px 0 0;
+  }
+  .spine-cover-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: var(--space-3);
+    font-family: var(--font-display);
+    font-style: italic;
+    writing-mode: initial;
+  }
+  .spines-next {
+    position: absolute;
+    right: 0;
+    top: 76px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+  .spines-next:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-spines]").forEach((root) => {
+    const track = root.querySelector<HTMLElement>("[data-track]");
+    const next = root.querySelector<HTMLButtonElement>("[data-next]");
+    next?.addEventListener("click", () => {
+      track?.scrollBy({ left: 320, behavior: "smooth" });
+    });
+  });
+</script>
