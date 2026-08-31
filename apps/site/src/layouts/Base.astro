@@ -3,6 +3,7 @@ import "@fontsource-variable/fraunces";
 import "@fontsource-variable/newsreader";
 import "@fontsource/jetbrains-mono";
 import "../styles/global.css";
+import { copyrightYearRange } from "../lib/copyright-year";
 import { siteConfig } from "../site.config";
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 const { title, description, wide = false } = Astro.props;
 const metaDescription = description ?? siteConfig.description;
 const currentPath = Astro.url.pathname;
+const copyrightRange = await copyrightYearRange();
 ---
 
 <html lang="en">
@@ -131,7 +133,7 @@ const currentPath = Astro.url.pathname;
         <slot />
       </main>
       <footer>
-        <p class="meta">© {new Date().getFullYear()} {siteConfig.author}</p>
+        <p class="meta">© {copyrightRange} {siteConfig.author}</p>
         <nav aria-label="Social">
           <a href={siteConfig.social.github} class="meta" rel="me noopener" target="_blank">GitHub</a>
           <a href={siteConfig.social.twitter} class="meta" rel="me noopener" target="_blank">Twitter</a>
