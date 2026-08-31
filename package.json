@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "concurrently -n site,cms -c blue,magenta \"pnpm --filter site dev\" \"pnpm --filter cms develop\"",
     "dev:site": "pnpm --filter site dev",
     "dev:cms": "pnpm --filter cms develop",
     "build:site": "pnpm --filter site build",
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.11",
     "@resvg/resvg-js": "^2.6.2",
+    "concurrently": "^10.0.5",
     "satori": "^0.29.0",
     "smol-toml": "^1.8.0",
     "wawoff2": "^2.0.1"
