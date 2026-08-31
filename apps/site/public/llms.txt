@@ -41,6 +41,7 @@
 ## Bookshelf
 
 - [Attention Is All You Need](https://andwati.com/bookshelf/): Ashish Vaswani, Noam Shazeer, Niki Parmar
+- [Designing Data-Intensive Applications, 2nd Edition](https://andwati.com/bookshelf/): Martin Kleppmann, Chris Riccomini
 - [Structure and Interpretation of Computer Programs](https://andwati.com/bookshelf/): Harold Abelson, Gerald Jay Sussman
 
 ## Blogs followed
