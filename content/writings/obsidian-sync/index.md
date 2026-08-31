@@ -6,7 +6,7 @@ date = 2023-10-01
 draft = false
 
 [taxonomies]
-tags = [ "obsidian", "git", "sync", "windows", "cron", "task scheduler", "powershell" ]
+tags = [ "obsidian", "git", "sync", "windows", "cron", "task-scheduler", "powershell" ]
 
 +++
 

@@ -6,7 +6,7 @@ date = 2023-04-29
 draft = false
 
 [taxonomies]
-tags = [ "subresource integrity", "csp", "cors" ]
+tags = [ "subresource-integrity", "csp", "cors" ]
 
 +++
 

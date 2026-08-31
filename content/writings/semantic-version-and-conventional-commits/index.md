@@ -6,7 +6,7 @@ date = 2023-01-24
 draft = false
 
 [taxonomies]
-tags = [ "git", "semver", "workflow", "conventional commits" ]
+tags = [ "git", "semver", "workflow", "conventional-commits" ]
 
 +++
 

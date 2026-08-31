@@ -50,6 +50,10 @@ function compact(obj) {
   return out;
 }
 
+function normalizeTag(tag) {
+  return tag.trim().toLowerCase().replace(/\s+/g, "-");
+}
+
 function toIsoDate(value) {
   if (value instanceof Date)
     return new TomlDate(value.toISOString().slice(0, 10));
@@ -108,7 +112,7 @@ for (const file of files) {
       updated: toIsoDate(fm.updated),
       draft: fm.draft ?? false,
       canonical_url: fm.canonical_url,
-      taxonomies: { tags: fm.taxonomies?.tags ?? [] },
+      taxonomies: { tags: (fm.taxonomies?.tags ?? []).map(normalizeTag) },
       extra: {
         series: fm.extra?.series,
         series_index: fm.extra?.series_index,
