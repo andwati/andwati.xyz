@@ -56,20 +56,22 @@ approved plan for full rationale on each decision referenced below.
 
 ## Design system
 
-- [ ] New typography scale + color system (full reset, not inherited from
-      `sass/_theme.scss`) — **needs your input**: aesthetic/brand decisions,
-      not something to guess at
+- [x] New typography scale + color system — dark-first (warm near-black,
+      cream text, coral accent) with a warm-paper light mode;
+      Fraunces (display/italic) + Newsreader (body) + JetBrains Mono
+      (nav/meta/code), fluid clamp() type scale. `src/styles/tokens.css`.
+      Referenced pixperk.tech and mcyoung.xyz — see the commit for specifics
 - [x] Motion primitives: CSS + native Web Animations API spring utility —
       `apps/site/src/lib/spring.ts` (damped-oscillator keyframes,
       `prefers-reduced-motion` aware). Not wired into any component yet —
-      that comes with the design system below
-- [ ] Base layout/components replacing the placeholder `Base.astro` —
-      **needs your input**: depends on the typography/color decision above
-- [ ] Homepage redesign around the Three.js centerpiece as hero — **needs
-      your input**: depends on the constellation data model decision below
+      the Three.js centerpiece below is the natural first user
+- [x] Base layout/components replacing the placeholder `Base.astro` — real
+      header/nav with active-link state, theme toggle, footer with social
+      links. Verified light + dark in-browser across home, a writing
+      detail page (TOC/headings), bookshelf, and 404
+- [ ] Homepage redesign around the Three.js centerpiece as hero — next up
 - [x] New 404 page concept (terminal easter egg retired) — "Page Fault",
-      a SIGSEGV/memory-fault framing; plain/unstyled pending the design
-      system, same as the rest of the current placeholder layout
+      now fully styled with the rest of the design system
 
 ## Three.js centerpiece
 
