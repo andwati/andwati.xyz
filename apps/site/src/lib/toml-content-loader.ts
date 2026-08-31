@@ -66,40 +66,60 @@ function walk(dir: string): string[] {
 export function tomlContentLoader(contentDir: string): Loader {
   return {
     name: "toml-content-loader",
-    load: async ({ store, config, logger }) => {
-      store.clear();
+    load: async ({ store, config, logger, watcher }) => {
       const dirUrl = new URL(contentDir, config.root);
-      let files: string[] = [];
-      try {
-        statSync(dirUrl);
-        files = walk(dirUrl.pathname);
-      } catch {
-        logger.warn(`toml-content-loader: no directory at ${dirUrl.pathname}`);
-        return;
-      }
-      for (const file of files) {
-        const raw = readFileSync(file, "utf8");
-        const match = raw.match(FRONTMATTER_RE);
-        if (!match) {
+
+      async function loadAll() {
+        store.clear();
+        let files: string[] = [];
+        try {
+          statSync(dirUrl);
+          files = walk(dirUrl.pathname);
+        } catch {
           logger.warn(
-            `toml-content-loader: skipping ${file}, no +++ frontmatter found`,
+            `toml-content-loader: no directory at ${dirUrl.pathname}`,
           );
-          continue;
+          return;
         }
-        const [, frontmatter, body] = match;
-        const data = parseToml(frontmatter) as Record<string, unknown>;
-        const relPath = relative(dirUrl.pathname, file);
-        const id = relPath.replace(/\/index\.md$/, "").replace(/\.md$/, "");
-        currentHeadings = [];
-        const trimmedBody = body.trim();
-        const html = await marked.parse(trimmedBody);
-        const wordCount = trimmedBody.split(/\s+/).filter(Boolean).length;
-        const readingMinutes = Math.max(1, Math.round(wordCount / 200));
-        store.set({
-          id,
-          data: { ...data, wordCount, readingMinutes },
-          rendered: { html, metadata: { headings: currentHeadings } },
-        });
+        for (const file of files) {
+          const raw = readFileSync(file, "utf8");
+          const match = raw.match(FRONTMATTER_RE);
+          if (!match) {
+            logger.warn(
+              `toml-content-loader: skipping ${file}, no +++ frontmatter found`,
+            );
+            continue;
+          }
+          const [, frontmatter, body] = match;
+          const data = parseToml(frontmatter) as Record<string, unknown>;
+          const relPath = relative(dirUrl.pathname, file);
+          const id = relPath.replace(/\/index\.md$/, "").replace(/\.md$/, "");
+          currentHeadings = [];
+          const trimmedBody = body.trim();
+          const html = await marked.parse(trimmedBody);
+          const wordCount = trimmedBody.split(/\s+/).filter(Boolean).length;
+          const readingMinutes = Math.max(1, Math.round(wordCount / 200));
+          store.set({
+            id,
+            data: { ...data, wordCount, readingMinutes },
+            rendered: { html, metadata: { headings: currentHeadings } },
+          });
+        }
+      }
+
+      await loadAll();
+
+      // In `astro dev`, re-scan the whole directory on any add/change/unlink
+      // so edits made outside Astro (Strapi's sync provider, or a file
+      // edited by hand) show up without restarting the dev server.
+      if (watcher) {
+        watcher.add(dirUrl.pathname);
+        const onChange = (changedPath: string) => {
+          if (changedPath.startsWith(dirUrl.pathname)) loadAll();
+        };
+        watcher.on("add", onChange);
+        watcher.on("change", onChange);
+        watcher.on("unlink", onChange);
       }
     },
   };
