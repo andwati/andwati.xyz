@@ -69,18 +69,26 @@ approved plan for full rationale on each decision referenced below.
       header/nav with active-link state, theme toggle, footer with social
       links. Verified light + dark in-browser across home, a writing
       detail page (TOC/headings), bookshelf, and 404
-- [ ] Homepage redesign around the Three.js centerpiece as hero — next up
+- [x] Homepage redesign around the Three.js centerpiece as hero — the
+      constellation sits above a 3-column dashboard (latest writings,
+      portfolio, bookshelf), verified rendering and hover/click working
+      in-browser
 - [x] New 404 page concept (terminal easter egg retired) — "Page Fault",
       now fully styled with the rest of the design system
 
 ## Three.js centerpiece
 
-- [ ] Decide the constellation/node-graph data model (what nodes/edges
-      represent — writings ↔ portfolio ↔ beliefs connections)
-- [ ] Build as an isolated Astro island
-- [ ] Static image/CSS fallback for `prefers-reduced-motion` and low-end
-      devices
-- [ ] Perf budget check on a low-end/mobile profile
+- [x] Constellation data model: nodes are real content entries (writings,
+      portfolio, bookshelf), edges are shared-tag connections — the same
+      relationship "related posts" already uses, drawn instead of listed.
+      No decorative/fake data. `src/lib/constellation-data.ts`
+- [x] Built as an isolated component (`Constellation.astro` + a plain
+      client `<script>` module, no framework), fibonacci-sphere layout,
+      hover raycasting with a title tooltip, click-through to the entry
+- [x] Fallback for `prefers-reduced-motion` (skips rotation/entrance
+      animation) and no-WebGL (`supportsWebGL()` check hides the canvas
+      entirely, falls back to a `<noscript>`-style plain count)
+- [ ] Perf budget check on a low-end/mobile profile — not yet measured
 
 ## Content features carried over from the Zola site
 

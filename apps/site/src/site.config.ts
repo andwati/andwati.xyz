@@ -5,11 +5,11 @@
  */
 export const siteConfig = {
   title: "Thoughts and Musings",
-  description: "Computer science, mathematics, life, and beliefs.",
+  description: "Computer science and mathematics.",
   baseUrl: "https://andwati.com",
   author: "andwati",
   llmsDescription:
-    "Ian Andwati's personal digital-legacy site covering computer science, mathematics, life, and beliefs — writings, portfolio, and a curated bookshelf.",
+    "Ian Andwati's personal digital-legacy site covering computer science and mathematics — writings, portfolio, and a curated bookshelf.",
   nav: [
     { name: "Writings", url: "/writings/" },
     { name: "Portfolio", url: "/portfolio/" },

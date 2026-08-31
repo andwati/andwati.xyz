@@ -1,0 +1,70 @@
+---
+import { buildConstellationGraph } from "../lib/constellation-data";
+
+const graph = await buildConstellationGraph();
+---
+
+<div class="constellation" data-constellation>
+  <div class="constellation-canvas" data-canvas aria-hidden="true"></div>
+  <div class="constellation-tooltip" data-tooltip></div>
+  <noscript>
+    <p class="meta">
+      {graph.nodes.length} entries, connected by shared tags — enable JavaScript to explore the constellation.
+    </p>
+  </noscript>
+</div>
+
+<script type="application/json" id="constellation-data" is:inline set:html={JSON.stringify(graph)} />
+
+<style>
+  .constellation {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    max-height: 60vh;
+    margin-bottom: var(--space-6);
+  }
+  .constellation-canvas {
+    width: 100%;
+    height: 100%;
+  }
+  .constellation-canvas canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .constellation-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-1) var(--space-3);
+    opacity: 0;
+    transition: opacity 0.15s var(--ease-out);
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  import type { ConstellationGraph } from "../lib/constellation-data";
+  import { mountConstellation, supportsWebGL } from "../lib/constellation-scene";
+
+  const root = document.querySelector<HTMLElement>("[data-constellation]");
+  const canvas = root?.querySelector<HTMLElement>("[data-canvas]");
+  const tooltip = root?.querySelector<HTMLElement>("[data-tooltip]");
+  const dataEl = document.getElementById("constellation-data");
+
+  if (root && canvas && tooltip && dataEl?.textContent && supportsWebGL()) {
+    const graph: ConstellationGraph = JSON.parse(dataEl.textContent);
+    if (graph.nodes.length > 0) {
+      mountConstellation(canvas, tooltip, graph);
+    }
+  } else if (root) {
+    root.style.display = "none";
+  }
+</script>

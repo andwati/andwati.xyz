@@ -1,6 +1,6 @@
 # Thoughts and Musings
 
-> Ian Andwati's personal digital-legacy site covering computer science, mathematics, life, and beliefs — writings, portfolio, and a curated bookshelf.
+> Ian Andwati's personal digital-legacy site covering computer science and mathematics — writings, portfolio, and a curated bookshelf.
 
 ## Main pages
 

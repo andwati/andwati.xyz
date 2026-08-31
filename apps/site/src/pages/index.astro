@@ -1,28 +1,96 @@
 ---
 import { getCollection } from "astro:content";
+import Constellation from "../components/Constellation.astro";
 import Base from "../layouts/Base.astro";
+import { siteConfig } from "../site.config";
 
 const writings = (await getCollection("writings", ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
   .slice(0, 3);
+const portfolio = (
+  await getCollection("portfolio", ({ data }) => !data.draft)
+).slice(0, 3);
+const bookshelf = (await getCollection("bookshelf")).slice(0, 3);
 ---
 
-<Base title="Home">
-  <h1>Ian Andwati</h1>
-  <p>Computer science, mathematics, life, and beliefs.</p>
+<Base title="Home" wide>
+  <h1>{siteConfig.author}</h1>
+  <p class="eyebrow">{siteConfig.description}</p>
 
-  <h2>Latest writings</h2>
-  {
-    writings.length === 0 ? (
-      <p class="meta">No writings published yet.</p>
-    ) : (
-      writings.map((entry) => (
-        <div class="card">
-          <h3><a href={`/writings/${entry.id}/`}>{entry.data.title}</a></h3>
-          <p class="meta">{entry.data.date.toDateString()}</p>
-          {entry.data.description && <p>{entry.data.description}</p>}
-        </div>
-      ))
-    )
-  }
+  <Constellation />
+
+  <div class="columns">
+    <section>
+      <p class="eyebrow">Writings</p>
+      {
+        writings.length === 0 ? (
+          <p class="meta">Nothing published yet.</p>
+        ) : (
+          writings.map((entry) => (
+            <div class="card">
+              <h3>
+                <a href={`/writings/${entry.id}/`}>{entry.data.title}</a>
+              </h3>
+              <p class="meta">{entry.data.date.toDateString()}</p>
+            </div>
+          ))
+        )
+      }
+      <a class="button" href="/writings/">All writings →</a>
+    </section>
+
+    <section>
+      <p class="eyebrow">Portfolio</p>
+      {
+        portfolio.length === 0 ? (
+          <p class="meta">Nothing published yet.</p>
+        ) : (
+          portfolio.map((entry) => (
+            <div class="card">
+              <h3>{entry.data.title}</h3>
+              <p class="meta">{entry.data.role}</p>
+            </div>
+          ))
+        )
+      }
+      <a class="button" href="/portfolio/">All projects →</a>
+    </section>
+
+    <section>
+      <p class="eyebrow">Bookshelf</p>
+      {
+        bookshelf.length === 0 ? (
+          <p class="meta">Nothing on the shelf yet.</p>
+        ) : (
+          bookshelf.map((entry) => (
+            <div class="card">
+              <h3>{entry.data.title}</h3>
+              <p class="meta">{entry.data.authors.join(", ")}</p>
+            </div>
+          ))
+        )
+      }
+      <a class="button" href="/bookshelf/">Full shelf →</a>
+    </section>
+  </div>
 </Base>
+
+<style>
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+  .columns .card {
+    padding-block: var(--space-3);
+  }
+  .columns .button {
+    margin-top: var(--space-3);
+  }
+  @media (max-width: 40rem) {
+    .columns {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

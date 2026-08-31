@@ -8,8 +8,10 @@ import { siteConfig } from "../site.config";
 interface Props {
   title: string;
   description?: string;
+  /** Widens .container for dashboard-style layouts (currently just the homepage). */
+  wide?: boolean;
 }
-const { title, description } = Astro.props;
+const { title, description, wide = false } = Astro.props;
 const metaDescription = description ?? siteConfig.description;
 const currentPath = Astro.url.pathname;
 ---
@@ -109,7 +111,7 @@ const currentPath = Astro.url.pathname;
     </style>
   </head>
   <body>
-    <div class="container">
+    <div class:list={["container", { "container--wide": wide }]}>
       <header>
         <a class="site-name" href="/">{siteConfig.author.toUpperCase()}</a>
         <nav aria-label="Primary">

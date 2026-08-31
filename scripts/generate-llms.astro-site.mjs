@@ -14,7 +14,7 @@ import { parse as parseToml } from "smol-toml";
 const baseUrl = "https://andwati.com";
 const siteTitle = "Thoughts and Musings";
 const summary =
-  "Ian Andwati's personal digital-legacy site covering computer science, mathematics, life, and beliefs — writings, portfolio, and a curated bookshelf.";
+  "Ian Andwati's personal digital-legacy site covering computer science and mathematics — writings, portfolio, and a curated bookshelf.";
 
 // Resolved relative to this file, not process.cwd() — this script runs as
 // part of apps/site's build script, whose cwd is apps/site, not the repo

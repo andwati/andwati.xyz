@@ -99,6 +99,10 @@ pre {
   padding-inline: var(--space-5);
 }
 
+.container--wide {
+  max-width: 64rem;
+}
+
 .eyebrow {
   font-family: var(--font-mono);
   font-size: var(--font-size-sm);
