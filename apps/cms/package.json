@@ -4,6 +4,8 @@
   "private": true,
   "description": "A Strapi application",
   "scripts": {
+    "predev": "test -f .env || cp .env.example .env",
+    "predevelop": "test -f .env || cp .env.example .env",
     "build": "strapi build",
     "console": "strapi console",
     "deploy": "strapi deploy",
