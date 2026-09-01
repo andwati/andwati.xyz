@@ -185,8 +185,8 @@ pre {
 
 .toc-sidebar {
   padding-top: var(--space-1);
-  border-left: 1px solid var(--border);
-  padding-left: var(--space-4);
+  border-right: 1px solid var(--border);
+  padding-right: var(--space-4);
 }
 
 .eyebrow {

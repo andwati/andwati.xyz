@@ -138,7 +138,11 @@ const tocHeadings = headings.filter((h) => h.depth <= 3);
 
   @media (min-width: 74rem) {
     .article-layout {
-      grid-template-columns: minmax(0, 42rem) 16rem;
+      grid-template-columns: 16rem minmax(0, 42rem);
+    }
+
+    .article-main {
+      order: 2;
     }
 
     .toc-inline {
@@ -147,6 +151,7 @@ const tocHeadings = headings.filter((h) => h.depth <= 3);
 
     .toc-sidebar {
       display: block;
+      order: 1;
       position: sticky;
       top: var(--space-6);
       max-height: calc(100vh - var(--space-7));
