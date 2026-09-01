@@ -1,0 +1,24 @@
+---
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+---
+
+<p class="meta">Table of Contents</p>
+<ul>
+  {
+    headings.map((h) => (
+      <li style={{ marginLeft: `${(h.depth - 2) * 1}rem` }}>
+        <a href={`#${h.slug}`}>{h.text}</a>
+      </li>
+    ))
+  }
+</ul>

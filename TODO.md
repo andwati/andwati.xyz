@@ -104,9 +104,13 @@ approved plan for full rationale on each decision referenced below.
 
 - [x] Series-nav (multi-part post series) — `writings/[...slug].astro`,
       uses the existing `extra.series`/`extra.series_index` fields
-- [x] Table of contents — inline only, no separate sidebar layout yet (that's
-      a design-system concern); heading ids + `headings` metadata now flow
-      through `toml-content-loader.ts` so `render(entry)` exposes them
+- [x] Table of contents — sticky sidebar on desktop (>=74rem), falls back to
+      the original inline list below the tags on narrower viewports; same
+      heading data rendered via a shared `TocList.astro` so the two aren't
+      duplicated markup by hand. `.container--wide` bumped 64rem → 76rem so
+      big monitors use more of the screen (prose column itself stays capped
+      at 42rem for readability — the extra width is the TOC gutter);
+      verified at 390/900/1180/1920px with no distortion at any width
 - [x] Prev/next post navigation
 - [x] Related posts (tag-based, tag-overlap ranked, limit 3)
 - [x] Per-tag descriptions on tag archive pages — `/tags/` + `/tags/[tag]/`,
