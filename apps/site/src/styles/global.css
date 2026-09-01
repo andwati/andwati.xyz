@@ -93,6 +93,28 @@ pre {
   border: 1px solid var(--border);
 }
 
+/* Shiki syntax highlighting (toml-content-loader.ts renders code fences with
+   defaultColor: false, so only per-token color vars are set — background,
+   padding, etc. stay on our own `pre` rule above). Follows the same
+   light/dark switching pattern as tokens.css: system preference by default,
+   [data-theme] overrides it either way. */
+.shiki,
+.shiki span {
+  color: var(--shiki-light) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .shiki,
+  :root:not([data-theme="light"]) .shiki span {
+    color: var(--shiki-dark) !important;
+  }
+}
+
+:root[data-theme="dark"] .shiki,
+:root[data-theme="dark"] .shiki span {
+  color: var(--shiki-dark) !important;
+}
+
 .container {
   max-width: 42rem;
   margin-inline: auto;
@@ -167,6 +189,61 @@ pre {
 .button:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+.callout {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--callout-color, var(--accent));
+  border-radius: var(--radius-md);
+  background: var(--bg-elevated);
+}
+
+.callout-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+  color: var(--callout-color, var(--accent));
+}
+
+.callout-icon {
+  width: 1.1em;
+  height: 1.1em;
+  flex-shrink: 0;
+}
+
+.callout-title {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.callout-content {
+  color: var(--text);
+}
+
+.callout-content > :last-child {
+  margin-bottom: 0;
+}
+
+.callout-note {
+  --callout-color: var(--accent);
+}
+
+.callout-tip {
+  --callout-color: #4a9c6d;
+}
+
+.callout-warning {
+  --callout-color: #d1a53d;
+}
+
+.callout-danger {
+  --callout-color: #d1502f;
 }
 
 @media (prefers-reduced-motion: reduce) {

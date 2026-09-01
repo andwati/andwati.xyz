@@ -2,6 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import type { Loader } from "astro/loaders";
 import { Marked } from "marked";
+import { createHighlighter } from "shiki";
 import { parse as parseToml } from "smol-toml";
 
 const FRONTMATTER_RE = /^\+\+\+\r?\n([\s\S]*?)\r?\n\+\+\+\r?\n?([\s\S]*)$/;
@@ -33,6 +34,52 @@ function stripInlineMarkdown(text: string): string {
 // as `headings`, matching the shape a built-in markdown loader would give.
 let currentHeadings: Heading[] = [];
 
+// Languages actually used in fenced code blocks across content/ — shiki
+// resolves common aliases (js→javascript, sh/zsh→bash, ps1→powershell,
+// bat→batch) on its own, so only the langs with no bundled grammar
+// (gdb console sessions, svg markup, plain txt) need an explicit remap.
+const highlighter = await createHighlighter({
+  themes: ["github-light", "github-dark"],
+  langs: [
+    "asm",
+    "bash",
+    "batch",
+    "c",
+    "css",
+    "html",
+    "javascript",
+    "powershell",
+    "python",
+    "toml",
+    "xml",
+    "yaml",
+    "plaintext",
+  ],
+});
+const LANG_ALIASES: Record<string, string> = {
+  gdb: "plaintext",
+  svg: "xml",
+  txt: "plaintext",
+  "": "plaintext",
+};
+
+function highlightCode(code: string, lang: string | undefined): string {
+  const resolved = LANG_ALIASES[lang ?? ""] ?? lang ?? "plaintext";
+  try {
+    return highlighter.codeToHtml(code, {
+      lang: resolved,
+      themes: { light: "github-light", dark: "github-dark" },
+      defaultColor: false,
+    });
+  } catch {
+    return highlighter.codeToHtml(code, {
+      lang: "plaintext",
+      themes: { light: "github-light", dark: "github-dark" },
+      defaultColor: false,
+    });
+  }
+}
+
 const marked = new Marked({
   renderer: {
     heading(token) {
@@ -42,8 +89,59 @@ const marked = new Marked({
       currentHeadings.push({ depth: token.depth, slug, text: plainText });
       return `<h${token.depth} id="${slug}">${html}</h${token.depth}>`;
     },
+    code(token) {
+      return highlightCode(token.text, token.lang);
+    },
   },
 });
+
+const CALLOUT_ICONS: Record<string, string> = {
+  note: '<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line>',
+  tip: '<circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path>',
+  warning:
+    '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line>',
+  danger:
+    '<polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>',
+};
+
+const CALLOUT_TITLES: Record<string, string> = {
+  note: "Note",
+  tip: "Tip",
+  warning: "Warning",
+  danger: "Danger",
+};
+
+// Legacy Zola shortcode syntax carried over verbatim by the posts→writings
+// migration script (which flagged, but didn't translate, these blocks —
+// see scripts/migrate-posts-to-writings.mjs). Matches
+// `{% <note> %}\n...body...\n{% </note> %}` for note/tip/warning/danger.
+const CALLOUT_RE =
+  /\{%\s*<(note|tip|warning|danger)>\s*%\}\r?\n?([\s\S]*?)\r?\n?\{%\s*<\/\1>\s*%\}/g;
+
+/** Replaces legacy callout shortcode blocks with the `.callout` markup
+ * (styled in global.css), rendering each block's inner markdown. Must run
+ * before the body's own `marked.parse()` call so the shortcode syntax
+ * doesn't get treated as literal paragraph text. */
+async function renderCallouts(body: string): Promise<string> {
+  const matches = [...body.matchAll(CALLOUT_RE)];
+  if (!matches.length) return body;
+  let out = body;
+  for (const match of matches) {
+    const [full, tag, inner] = match;
+    const innerHtml = await marked.parseInline(inner.trim());
+    out = out.replace(
+      full,
+      `<aside class="callout callout-${tag}">
+  <div class="callout-header">
+    <svg class="callout-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${CALLOUT_ICONS[tag]}</svg>
+    <span class="callout-title">${CALLOUT_TITLES[tag]}</span>
+  </div>
+  <div class="callout-content">${innerHtml}</div>
+</aside>`,
+    );
+  }
+  return out;
+}
 
 function walk(dir: string): string[] {
   const out: string[] = [];
@@ -95,7 +193,7 @@ export function tomlContentLoader(contentDir: string): Loader {
           const relPath = relative(dirUrl.pathname, file);
           const id = relPath.replace(/\/index\.md$/, "").replace(/\.md$/, "");
           currentHeadings = [];
-          const trimmedBody = body.trim();
+          const trimmedBody = await renderCallouts(body.trim());
           const html = await marked.parse(trimmedBody);
           const wordCount = trimmedBody.split(/\s+/).filter(Boolean).length;
           const readingMinutes = Math.max(1, Math.round(wordCount / 200));

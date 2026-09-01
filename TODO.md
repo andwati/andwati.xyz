@@ -90,7 +90,15 @@ approved plan for full rationale on each decision referenced below.
 - [x] Fallback for `prefers-reduced-motion` (skips rotation/entrance
       animation) and no-WebGL (`supportsWebGL()` check hides the canvas
       entirely, falls back to a `<noscript>`-style plain count)
-- [ ] Perf budget check on a low-end/mobile profile — not yet measured
+- [x] Perf budget check — scene is trivially light (24 nodes, 12x12-segment
+      spheres, a handful of line-segment edges: well under 10k triangles),
+      renders at 100+fps uncapped with no dropped frames. The real cost is
+      the JS payload: three.js core pulls in ~130KB gzip / ~106KB brotli
+      regardless of `import *` vs named imports (`sideEffects: false`
+      already lets Rollup tree-shake fully; tried named imports, no size
+      change). That script is a deferred module (doesn't block first
+      paint/DCL) and the page was interactive in ~270ms in testing. No
+      code changes made — budget is fine as shipped
 
 ## Content features carried over from the Zola site
 
@@ -108,6 +116,11 @@ approved plan for full rationale on each decision referenced below.
       `Base.astro`)
 - [x] RSS/JSON feeds — `/rss.xml`, `/feed.json`
 - [x] Sitemap + robots.txt — `@astrojs/sitemap`, static `public/robots.txt`
+- [x] Code block syntax highlighting — `toml-content-loader.ts` renders
+      fenced code blocks through shiki (`github-light`/`github-dark`,
+      `defaultColor: false` so only per-token colors are set and our own
+      `pre` background/border/padding still apply), switched by the same
+      `[data-theme]`/`prefers-color-scheme` pattern as `tokens.css`
 
 ## Search & comments
 
@@ -134,9 +147,14 @@ approved plan for full rationale on each decision referenced below.
       additive only (`content/posts/` untouched), re-runnable/idempotent.
       2 of 20 posts (`from-c-to-machine-code`,
       `self-hosting-gitea-and-mirroring-github`) use note/tip/warning/danger
-      callout shortcodes with no Astro equivalent yet — flagged by the
-      script, needs a real component once the design system exists
-      (**not blocking**, just noted for later)
+      callout shortcodes — flagged by the script, still left as-is in the
+      body text
+- [x] note/tip/warning/danger callout shortcode rendering — the legacy
+      `{% <note> %} ... {% </note> %}` blocks are converted to styled
+      `.callout` markup by `toml-content-loader.ts`'s `renderCallouts()`
+      (runs before the body's markdown parse), styled in `global.css` to
+      match the new design system. Verified in-browser on
+      `from-c-to-machine-code`
 - [x] Preserve slugs/URLs via redirects — the script generates 301s from
       `/posts/<slug>/` to `/writings/<slug>/` into `sws.toml`, idempotently
 - [ ] Migrate `content/archive/`, `content/about.md` equivalents — holding
