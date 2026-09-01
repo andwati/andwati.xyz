@@ -117,10 +117,13 @@ approved plan for full rationale on each decision referenced below.
 - [x] RSS/JSON feeds — `/rss.xml`, `/feed.json`
 - [x] Sitemap + robots.txt — `@astrojs/sitemap`, static `public/robots.txt`
 - [x] Code block syntax highlighting — `toml-content-loader.ts` renders
-      fenced code blocks through shiki (`github-light`/`github-dark`,
-      `defaultColor: false` so only per-token colors are set and our own
-      `pre` background/border/padding still apply), switched by the same
-      `[data-theme]`/`prefers-color-scheme` pattern as `tokens.css`
+      fenced code blocks through `highlight.js`'s core build with only the
+      11 languages content actually uses registered (no bundled-theme/WASM
+      grammar weight like shiki, which was tried first and swapped out for
+      this lighter option); `.hljs-*` token classes in `global.css` are
+      colored from the existing design tokens (`--accent`, `--text-muted`,
+      ...), so they already switch with the site's theme with no extra
+      `[data-theme]` rules needed
 
 ## Search & comments
 

@@ -1,8 +1,19 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { extname, join, relative } from "node:path";
 import type { Loader } from "astro/loaders";
+import hljs from "highlight.js/lib/core";
+import hljsBash from "highlight.js/lib/languages/bash";
+import hljsC from "highlight.js/lib/languages/c";
+import hljsCss from "highlight.js/lib/languages/css";
+import hljsDos from "highlight.js/lib/languages/dos";
+import hljsIni from "highlight.js/lib/languages/ini";
+import hljsJavascript from "highlight.js/lib/languages/javascript";
+import hljsPowershell from "highlight.js/lib/languages/powershell";
+import hljsPython from "highlight.js/lib/languages/python";
+import hljsX86asm from "highlight.js/lib/languages/x86asm";
+import hljsXml from "highlight.js/lib/languages/xml";
+import hljsYaml from "highlight.js/lib/languages/yaml";
 import { Marked } from "marked";
-import { createHighlighter } from "shiki";
 import { parse as parseToml } from "smol-toml";
 
 const FRONTMATTER_RE = /^\+\+\+\r?\n([\s\S]*?)\r?\n\+\+\+\r?\n?([\s\S]*)$/;
@@ -34,50 +45,50 @@ function stripInlineMarkdown(text: string): string {
 // as `headings`, matching the shape a built-in markdown loader would give.
 let currentHeadings: Heading[] = [];
 
-// Languages actually used in fenced code blocks across content/ — shiki
-// resolves common aliases (js→javascript, sh/zsh→bash, ps1→powershell,
-// bat→batch) on its own, so only the langs with no bundled grammar
-// (gdb console sessions, svg markup, plain txt) need an explicit remap.
-const highlighter = await createHighlighter({
-  themes: ["github-light", "github-dark"],
-  langs: [
-    "asm",
-    "bash",
-    "batch",
-    "c",
-    "css",
-    "html",
-    "javascript",
-    "powershell",
-    "python",
-    "toml",
-    "xml",
-    "yaml",
-    "plaintext",
-  ],
-});
+// highlight.js's core build (no bundled grammars) plus only the languages
+// actually used in content/'s fenced code blocks — keeps the highlighter
+// thin instead of shipping its full ~190-language bundle. Aliases below
+// map every fence lang seen in content to one of these registered names.
+hljs.registerLanguage("bash", hljsBash);
+hljs.registerLanguage("c", hljsC);
+hljs.registerLanguage("css", hljsCss);
+hljs.registerLanguage("dos", hljsDos);
+hljs.registerLanguage("ini", hljsIni);
+hljs.registerLanguage("javascript", hljsJavascript);
+hljs.registerLanguage("powershell", hljsPowershell);
+hljs.registerLanguage("python", hljsPython);
+hljs.registerLanguage("x86asm", hljsX86asm);
+hljs.registerLanguage("xml", hljsXml);
+hljs.registerLanguage("yaml", hljsYaml);
+
 const LANG_ALIASES: Record<string, string> = {
+  asm: "x86asm",
+  bat: "dos",
   gdb: "plaintext",
+  html: "xml",
+  js: "javascript",
+  ps1: "powershell",
+  sh: "bash",
   svg: "xml",
+  toml: "ini",
   txt: "plaintext",
+  zsh: "bash",
   "": "plaintext",
 };
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
 function highlightCode(code: string, lang: string | undefined): string {
   const resolved = LANG_ALIASES[lang ?? ""] ?? lang ?? "plaintext";
-  try {
-    return highlighter.codeToHtml(code, {
-      lang: resolved,
-      themes: { light: "github-light", dark: "github-dark" },
-      defaultColor: false,
-    });
-  } catch {
-    return highlighter.codeToHtml(code, {
-      lang: "plaintext",
-      themes: { light: "github-light", dark: "github-dark" },
-      defaultColor: false,
-    });
-  }
+  const inner = hljs.getLanguage(resolved)
+    ? hljs.highlight(code, { language: resolved }).value
+    : escapeHtml(code);
+  return `<pre class="hljs"><code>${inner}</code></pre>`;
 }
 
 const marked = new Marked({

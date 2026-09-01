@@ -93,26 +93,56 @@ pre {
   border: 1px solid var(--border);
 }
 
-/* Shiki syntax highlighting (toml-content-loader.ts renders code fences with
-   defaultColor: false, so only per-token color vars are set — background,
-   padding, etc. stay on our own `pre` rule above). Follows the same
-   light/dark switching pattern as tokens.css: system preference by default,
-   [data-theme] overrides it either way. */
-.shiki,
-.shiki span {
-  color: var(--shiki-light) !important;
+/* highlight.js syntax highlighting (toml-content-loader.ts renders code
+   fences through hljs's core build). Colors are drawn from the existing
+   design tokens, so they already switch with the site's light/dark theme
+   without any extra [data-theme] rules here — see tokens.css. */
+.hljs-comment,
+.hljs-quote {
+  color: var(--text-muted);
+  font-style: italic;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .shiki,
-  :root:not([data-theme="light"]) .shiki span {
-    color: var(--shiki-dark) !important;
-  }
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-type,
+.hljs-literal,
+.hljs-link {
+  color: var(--accent);
 }
 
-:root[data-theme="dark"] .shiki,
-:root[data-theme="dark"] .shiki span {
-  color: var(--shiki-dark) !important;
+.hljs-string,
+.hljs-attr,
+.hljs-symbol,
+.hljs-addition {
+  color: #4a9c6d;
+}
+
+.hljs-number,
+.hljs-meta,
+.hljs-doctag {
+  color: #d1a53d;
+}
+
+.hljs-title,
+.hljs-title.function_,
+.hljs-title.class_,
+.hljs-name {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.hljs-deletion {
+  color: #d1502f;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 700;
 }
 
 .container {
