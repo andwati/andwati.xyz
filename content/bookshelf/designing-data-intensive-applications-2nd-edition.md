@@ -9,7 +9,7 @@ rating = 5
 read_status = "reading"
 
 [taxonomies]
-tags = [ "distributed systems" ]
+tags = [ "distributed-systems" ]
 +++
 
 
