@@ -51,7 +51,7 @@ const description =
 const tocHeadings = headings.filter((h) => h.depth <= 3);
 ---
 
-<Base title={entry.data.title} description={description}>
+<Base title={entry.data.title} description={description} ogImage={`/images/og/writings/${entry.id}.png`}>
   <h1>{entry.data.title}</h1>
   <p class="meta">
     {entry.data.date.toDateString()}

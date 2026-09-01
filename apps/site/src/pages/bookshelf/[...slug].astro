@@ -21,7 +21,7 @@ const items = (await getCollection("bookshelf")).sort(
 );
 ---
 
-<Base title={entry.data.title} wide>
+<Base title={entry.data.title} wide ogImage={`/images/og/bookshelf/${entry.id}.png`}>
   <BookSpines
     items={items.map((e) => ({ slug: e.id, title: e.data.title, coverImage: e.data.cover_image }))}
     activeSlug={entry.id}

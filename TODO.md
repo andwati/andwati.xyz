@@ -43,12 +43,14 @@ approved plan for full rationale on each decision referenced below.
       Scholar nor arXiv offers a reliable image source for papers, so
       `cover_image` stays manually-set for papers (or gets one later from
       the OG-image pipeline below)
-- [ ] OG image auto-generation extended from the legacy per-post script to
-      all three content types (writings, portfolio, bookshelf) — **blocked
-      on the design system**: `scripts/generate-og-images.mjs` is hard-coded
-      to the old "CASE FILE" hacker-terminal branding being fully replaced;
-      building this now would just be redone once the new visual identity
-      lands
+- [x] OG image auto-generation extended to all three content types
+      (writings, portfolio, bookshelf) using the new design system —
+      `scripts/generate-og-images.astro-site.mjs`, wired into `apps/site`'s
+      build script; `Base.astro` renders `og:image`/`twitter:image` from a
+      per-page `ogImage` prop (writings/bookshelf detail pages wire it in;
+      portfolio has no detail page yet to wire it into). Uses static-weight
+      Fraunces/Newsreader font packages, not the variable fonts the site
+      ships — satori's opentype.js parser can't read the variable fvar table
 - [x] `llms.txt` generation extended to cover all content types — unblocked
       once `site.config.ts` existed (built above for feeds/meta anyway):
       `scripts/generate-llms.astro-site.mjs` reads all four content

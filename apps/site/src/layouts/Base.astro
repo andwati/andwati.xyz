@@ -11,22 +11,35 @@ interface Props {
   description?: string;
   /** Widens .container for dashboard-style layouts (currently just the homepage). */
   wide?: boolean;
+  /** Site-root-relative path to a per-page OG image, e.g. /images/og/writings/foo.png */
+  ogImage?: string;
 }
-const { title, description, wide = false } = Astro.props;
+const { title, description, wide = false, ogImage } = Astro.props;
 const metaDescription = description ?? siteConfig.description;
 const currentPath = Astro.url.pathname;
 const copyrightRange = await copyrightYearRange();
+const pageTitle = `${title} — ${siteConfig.title}`;
+const ogImageUrl = new URL(ogImage ?? "/favicon.svg", siteConfig.baseUrl).href;
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} — {siteConfig.title}</title>
+    <title>{pageTitle}</title>
     <meta name="description" content={metaDescription} />
     <link rel="alternate" type="application/rss+xml" title={siteConfig.title} href="/rss.xml" />
     <link rel="alternate" type="application/feed+json" title={siteConfig.title} href="/feed.json" />
     <link rel="webmention" href="https://webmention.io/andwati.com/webmention" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={metaDescription} />
+    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={metaDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
     <script is:inline>
       // Runs before paint to avoid a flash of the wrong theme.
       (function () {

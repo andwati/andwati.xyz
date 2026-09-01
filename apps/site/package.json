@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "astro dev",
     "generate:llms": "node ../../scripts/generate-llms.astro-site.mjs",
-    "build": "pnpm run generate:llms && astro build && pagefind --site dist",
+    "generate:og": "node ../../scripts/generate-og-images.astro-site.mjs",
+    "build": "pnpm run generate:llms && pnpm run generate:og && astro build && pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check",
     "astro": "astro"
