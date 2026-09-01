@@ -1,12 +1,13 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { coversRoot } from "./content-paths";
 
 /**
  * Covers are cached into the Astro app's public/ dir directly, so the built
  * site serves them from /covers/<slug>.jpg with no runtime dependency on the
  * source (Open Library, Semantic Scholar, ...).
  */
-const COVERS_DIR = join(process.cwd(), "..", "site", "public", "covers");
+const COVERS_DIR = coversRoot();
 
 async function download(url: string): Promise<Buffer | undefined> {
   const res = await fetch(url);

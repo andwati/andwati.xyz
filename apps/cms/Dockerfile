@@ -26,8 +26,12 @@ RUN pnpm --filter cms build
 
 FROM base AS runtime
 ENV NODE_ENV=production
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates git \
+    && rm -rf /var/lib/apt/lists/*
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/apps/cms /app/apps/cms
+COPY --chmod=755 apps/cms/docker-entrypoint.sh /usr/local/bin/andwati-cms-entrypoint
 WORKDIR /app/apps/cms
 EXPOSE 1337
-CMD ["pnpm", "start"]
+ENTRYPOINT ["andwati-cms-entrypoint"]

@@ -1,0 +1,17 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Contact: mailto:andwatiian@gmail.com
+Expires: 2027-07-16T00:00:00.000Z
+Encryption: https://andwati.com/.well-known/pgp-key.txt
+Encryption: https://keys.openpgp.org/vks/v1/by-fingerprint/AD58AAB7A20D8523CBF59A791F20FED0AA05B0DA
+Encryption: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xAD58AAB7A20D8523CBF59A791F20FED0AA05B0DA
+Preferred-Languages: en
+Canonical: https://andwati.com/.well-known/security.txt
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYKAB0WIQStWKq3og2FI8v1mnkfIP7QqgWw2gUCaljXlQAKCRAfIP7QqgWw
+2qAoAP0Q7Cc0YsP2dvV7fqDlqcnjuJepQQSTZBz7ehkPyjGV5gEA3K9ZqQmuI2ea
+KKADWxuKTTY43PBmuV9rMqLm8ZOPlAY=
+=NUkY
+-----END PGP SIGNATURE-----

@@ -1,4 +1,5 @@
-import { join } from "node:path";
+import { rmSync } from "node:fs";
+import { join, relative, resolve } from "node:path";
 import {
   cacheRemoteImage,
   fetchBookCover,
@@ -10,6 +11,8 @@ import {
   toTomlDate,
   writeEntry,
 } from "./content-file";
+import { contentRoot, coversRoot } from "./content-paths";
+import { publishContentChanges } from "./git-publisher";
 
 const BOOKSHELF_UID = "api::bookshelf-entry.bookshelf-entry";
 
@@ -38,11 +41,6 @@ const isoDate = (value: unknown): string | undefined =>
     : typeof value === "string"
       ? value
       : undefined;
-
-function contentRoot(): string {
-  // apps/cms -> repo root/content (also the mount point in the dev container)
-  return join(process.cwd(), "..", "..", "content");
-}
 
 function buildConfigs(): Record<string, SyncConfig> {
   const root = contentRoot();
@@ -209,11 +207,28 @@ let importing = false;
 function writeEntryForConfig(
   config: SyncConfig,
   entry: Record<string, unknown>,
-): void {
+): string | undefined {
   const slug = entry.slug as string | undefined;
-  if (!slug) return;
+  if (!slug) return undefined;
   const { frontmatter, body } = config.toFile(entry);
-  writeEntry(config.dir, slug, config.layout, frontmatter, body);
+  return writeEntry(config.dir, slug, config.layout, frontmatter, body);
+}
+
+function coverFileForEntry(
+  entry: Record<string, unknown> | null,
+): string | undefined {
+  const coverImage = entry?.cover_image;
+  if (typeof coverImage !== "string" || !coverImage.startsWith("/covers/")) {
+    return undefined;
+  }
+
+  const root = resolve(coversRoot());
+  const file = resolve(root, coverImage.slice("/covers/".length));
+  const fromRoot = relative(root, file);
+  if (fromRoot === ".." || fromRoot.startsWith("../")) {
+    throw new Error(`Refusing unsafe local cover path: ${coverImage}`);
+  }
+  return file;
 }
 
 /**
@@ -325,6 +340,9 @@ async function enrichBookshelfEntry(
   }
 
   if (Object.keys(patch).length === 0) return entry;
+  // Keep the nested update outside the network-failure guard. Its middleware
+  // persists and publishes the enriched entry; publication errors must reach
+  // the caller instead of being mistaken for a cover-provider outage.
   return documents(BOOKSHELF_UID).update({
     documentId: entry.documentId as string,
     data: patch,
@@ -348,14 +366,13 @@ export function registerContentSync(strapi: {
     const config = SYNC_CONFIGS[ctx.uid];
     if (!config || importing) return next();
 
-    let preDeleteSlug: string | undefined;
+    let preDeleteEntry: Record<string, unknown> | null = null;
     if (ctx.action === "delete") {
       const documentId = (ctx.params as { documentId?: string }).documentId;
       if (documentId) {
-        const existing = await strapi
+        preDeleteEntry = await strapi
           .documents(ctx.uid)
           .findOne({ documentId });
-        preDeleteSlug = existing?.slug as string | undefined;
       }
     }
 
@@ -374,14 +391,33 @@ export function registerContentSync(strapi: {
                 result as Record<string, unknown>,
               )
             : (result as Record<string, unknown>);
-        writeEntryForConfig(config, entry);
-      } else if (ctx.action === "delete" && preDeleteSlug) {
-        deleteEntry(config.dir, preDeleteSlug, config.layout);
+        const entryFile = writeEntryForConfig(config, entry);
+        if (entryFile) {
+          const paths = [entryFile];
+          const coverFile = coverFileForEntry(entry);
+          if (coverFile) paths.push(coverFile);
+          await publishContentChanges(
+            paths,
+            `content: ${ctx.action} ${entry.slug as string}`,
+          );
+        }
+      } else if (ctx.action === "delete" && preDeleteEntry) {
+        const slug = preDeleteEntry.slug as string | undefined;
+        if (!slug) return result;
+
+        const paths = [deleteEntry(config.dir, slug, config.layout)];
+        const coverFile = coverFileForEntry(preDeleteEntry);
+        if (coverFile) {
+          rmSync(coverFile, { force: true });
+          paths.push(coverFile);
+        }
+        await publishContentChanges(paths, `content: delete ${slug}`);
       }
     } catch (err) {
       strapi.log.error(
         `content-sync: failed to write ${ctx.uid} to disk: ${(err as Error).message}`,
       );
+      throw err;
     }
 
     return result;

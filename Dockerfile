@@ -1,21 +1,20 @@
-# Multi-stage build: generate llms.txt with Node, build the site with Zola,
-# then serve the static output with static-web-server.
-#
-# This is the Dokploy/self-hosted deployment path (the only one - the prior
-# Cloudflare Pages/Workers path has been retired).
+# Production image for the Astro site. Build from the workspace root:
+#   docker build -t andwati-site .
 
-FROM node:22-slim AS llms
-WORKDIR /project
-COPY . .
-RUN node scripts/generate-llms.mjs
+FROM node:24-bookworm-slim AS build
+RUN corepack enable
+WORKDIR /app
 
-FROM ghcr.io/getzola/zola:v0.23.1 AS zola
-WORKDIR /project
-COPY . .
-COPY --from=llms /project/static/llms.txt static/llms.txt
-RUN ["/zola", "build"]
+COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
+COPY apps/site/package.json apps/site/package.json
+COPY apps/cms/package.json apps/cms/package.json
+COPY apps/site apps/site
+COPY content content
+COPY scripts scripts
+RUN pnpm install --frozen-lockfile --filter andwati-com --filter site
+RUN pnpm --filter site build
 
 FROM ghcr.io/static-web-server/static-web-server:2
-COPY --from=zola /project/public /public
+COPY --from=build /app/apps/site/dist /public
 COPY sws.toml /sws.toml
 EXPOSE 80

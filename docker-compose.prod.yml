@@ -1,0 +1,50 @@
+name: andwati-production
+
+services:
+  site:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    expose:
+      - "80"
+
+  cms:
+    build:
+      context: .
+      dockerfile: apps/cms/Dockerfile
+    restart: unless-stopped
+    init: true
+    expose:
+      - "1337"
+    environment:
+      HOST: 0.0.0.0
+      PORT: "1337"
+      NODE_ENV: production
+      PUBLIC_URL: ${CMS_PUBLIC_URL:?Set CMS_PUBLIC_URL in Dokploy}
+      IS_PROXIED: "true"
+      APP_KEYS: ${APP_KEYS:?Set APP_KEYS in Dokploy}
+      API_TOKEN_SALT: ${API_TOKEN_SALT:?Set API_TOKEN_SALT in Dokploy}
+      ADMIN_JWT_SECRET: ${ADMIN_JWT_SECRET:?Set ADMIN_JWT_SECRET in Dokploy}
+      TRANSFER_TOKEN_SALT: ${TRANSFER_TOKEN_SALT:?Set TRANSFER_TOKEN_SALT in Dokploy}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in Dokploy}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Set ENCRYPTION_KEY in Dokploy}
+      DATABASE_CLIENT: sqlite
+      DATABASE_FILENAME: .tmp/data.db
+      CONTENT_REPOSITORY_ROOT: /content-repository
+      CONTENT_GIT_REPOSITORY: ${CONTENT_GIT_REPOSITORY:-andwati/andwati.com}
+      CONTENT_GIT_BRANCH: ${CONTENT_GIT_BRANCH:-main}
+      CONTENT_GIT_COMMIT_NAME: ${CONTENT_GIT_COMMIT_NAME:-andwati.com CMS}
+      CONTENT_GIT_COMMIT_EMAIL: ${CONTENT_GIT_COMMIT_EMAIL:-andwati-cms@users.noreply.github.com}
+      GIT_PUBLISH_ENABLED: "true"
+      GITHUB_TOKEN: ${GITHUB_TOKEN:?Set a GitHub contents-write token in Dokploy}
+      DOKPLOY_DEPLOY_WEBHOOK_URL: ${DOKPLOY_DEPLOY_WEBHOOK_URL:?Set the Dokploy deploy webhook URL}
+    volumes:
+      - cms_database:/app/apps/cms/.tmp
+      - cms_uploads:/app/apps/cms/public/uploads
+      - content_checkout:/content-repository
+
+volumes:
+  cms_database:
+  cms_uploads:
+  content_checkout:

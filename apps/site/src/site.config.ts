@@ -12,9 +12,11 @@ export const siteConfig = {
     "Ian Andwati's personal digital-legacy site covering computer science and mathematics — writings, portfolio, and a curated bookshelf.",
   nav: [
     { name: "Writings", url: "/writings/" },
+    { name: "Archive", url: "/archive/" },
     { name: "Portfolio", url: "/portfolio/" },
     { name: "Bookshelf", url: "/bookshelf/" },
     { name: "Blogs", url: "/blogs/" },
+    { name: "About", url: "/about/" },
   ],
   social: {
     github: "https://github.com/andwati",

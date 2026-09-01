@@ -1,0 +1,121 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+
+const writings = (
+  await getCollection("writings", ({ data }) => !data.draft)
+).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const writingsByYear = Map.groupBy(writings, (entry) =>
+  entry.data.date.getFullYear(),
+);
+---
+
+<Base
+  title="Archive"
+  description="A chronological archive of every published writing on Thoughts and Musings."
+>
+  <header class="archive-header">
+    <h1>Archive</h1>
+  </header>
+
+  <div class="archive">
+    {
+      [...writingsByYear].map(([year, entries]) => (
+        <section class="archive-year" aria-labelledby={`year-${year}`}>
+          <h2 id={`year-${year}`}>{year}</h2>
+          <ol>
+            {entries.map((entry) => (
+              <li>
+                <time datetime={entry.data.date.toISOString().slice(0, 10)}>
+                  {entry.data.date.toLocaleDateString("en", {
+                    day: "2-digit",
+                    month: "short",
+                  })}
+                </time>
+                <a href={`/writings/${entry.id}/`}>{entry.data.title}</a>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .archive-header {
+    margin-bottom: var(--space-7);
+  }
+
+  .archive-header .eyebrow {
+    margin-bottom: var(--space-2);
+  }
+
+  .archive-header p:last-child {
+    color: var(--text-muted);
+  }
+
+  .archive-year {
+    display: grid;
+    grid-template-columns: 5rem 1fr;
+    gap: var(--space-5);
+    padding-block: var(--space-5);
+    border-top: 1px solid var(--border);
+  }
+
+  .archive-year h2 {
+    position: sticky;
+    top: var(--space-5);
+    align-self: start;
+    margin: 0;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    font-style: normal;
+    letter-spacing: 0.08em;
+  }
+
+  ol {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr;
+    gap: var(--space-3);
+    align-items: baseline;
+  }
+
+  time {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+  }
+
+  li a {
+    text-decoration-color: var(--border);
+    text-underline-offset: 0.2em;
+  }
+
+  li a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  @media (max-width: 30rem) {
+    .archive-year {
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+    }
+
+    .archive-year h2 {
+      position: static;
+    }
+  }
+</style>

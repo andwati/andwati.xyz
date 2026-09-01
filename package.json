@@ -2,6 +2,7 @@
   "name": "andwati-com",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "dev": "concurrently -n site,cms -c blue,magenta \"pnpm --filter site dev\" \"pnpm --filter cms develop\"",
     "dev:site": "pnpm --filter site dev",

@@ -1,0 +1,146 @@
+---
+import Base from "../layouts/Base.astro";
+import { siteConfig } from "../site.config";
+---
+
+<Base
+  title="About"
+  description="About Ian Andwati, the software engineer behind Thoughts and Musings."
+>
+  <article class="about">
+    <header>
+      <p class="eyebrow">About this place</p>
+      <p class="lede">
+        I’m Ian Andwati, a software engineer. This site is my durable record of
+        what I learn, build, read, and find worth returning to.
+      </p>
+    </header>
+
+    <section>
+      <p>
+        I spend my free time on hobby projects and occasionally write about the
+        experience. I’m especially interested in offensive security, reverse
+        engineering, computer science, and mathematics.
+      </p>
+      <p>
+        The <a href="/writings/">writings</a> hold longer-form notes, the
+        <a href="/portfolio/">portfolio</a> records finished work, and the
+        <a href="/bookshelf/">bookshelf</a> keeps the sources that shaped both. The
+        <a href="/archive/">archive</a> is the unfiltered chronology.
+      </p>
+    </section>
+
+    <section class="contact">
+      <div>
+        <p class="eyebrow">Contact</p>
+        <h2>Say hello</h2>
+      </div>
+      <p>
+        Email is the most reliable way to reach me:
+        <a href={`mailto:${siteConfig.social.email}`}
+          >{siteConfig.social.email}</a
+        >. You can also find me on
+        <a href={siteConfig.social.github} rel="me noopener" target="_blank"
+          >GitHub</a
+        >.
+      </p>
+    </section>
+
+    <section>
+      <p class="eyebrow">For sensitive messages</p>
+      <h2>PGP</h2>
+      <p>
+        My public key is available as a <a href="/.well-known/pgp-key.txt"
+          >plain-text download</a
+        >
+        and on
+        <a
+          href="https://keys.openpgp.org/search?q=AD58AAB7A20D8523CBF59A791F20FED0AA05B0DA"
+          rel="noopener"
+          target="_blank">keys.openpgp.org</a
+        >. The signed <a href="/.well-known/security.txt">security.txt</a> lists the
+        same contact and encryption details.
+      </p>
+      <div class="fingerprint" aria-label="PGP fingerprint">
+        <span>Fingerprint</span>
+        <code>AD58 AAB7 A20D 8523 CBF5 9A79 1F20 FED0 AA05 B0DA</code>
+      </div>
+    </section>
+  </article>
+</Base>
+
+<style>
+  .about > header {
+    margin-bottom: var(--space-8);
+  }
+
+  .about > header .eyebrow {
+    margin-bottom: var(--space-2);
+  }
+
+  .lede {
+    max-width: 36rem;
+    color: var(--text-muted);
+    font-size: var(--font-size-xl);
+    line-height: 1.45;
+  }
+
+  section {
+    padding-block: var(--space-6);
+    border-top: 1px solid var(--border);
+  }
+
+  section p:last-child {
+    margin-bottom: 0;
+  }
+
+  section a {
+    text-decoration-color: var(--border);
+    text-underline-offset: 0.2em;
+  }
+
+  section a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  .contact {
+    display: grid;
+    grid-template-columns: minmax(8rem, 1fr) 2fr;
+    gap: var(--space-6);
+  }
+
+  .contact .eyebrow {
+    margin-bottom: var(--space-2);
+  }
+
+  .fingerprint {
+    display: grid;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+  }
+
+  .fingerprint span {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-sm);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .fingerprint code {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 34rem) {
+    .contact {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>

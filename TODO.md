@@ -164,10 +164,12 @@ approved plan for full rationale on each decision referenced below.
       `from-c-to-machine-code`
 - [x] Preserve slugs/URLs via redirects — the script generates 301s from
       `/posts/<slug>/` to `/writings/<slug>/` into `sws.toml`, idempotently
-- [ ] Migrate `content/archive/`, `content/about.md` equivalents — holding
-      off: the Astro site doesn't have archive/about pages built yet, and
-      "about" copy/framing is exactly the kind of thing you'd want to
-      review/rewrite for the new "digital legacy" identity, not port as-is
+- [x] Migrate `content/archive/`, `content/about.md` equivalents —
+      `/archive/` groups every published writing by year; `/about/` reframes
+      the legacy copy around the site's "digital legacy" identity while
+      preserving its PGP and security contact details. Both are in the main
+      navigation, and the linked `.well-known` files are copied into Astro's
+      public output
 - [ ] Verify RSS subscribers and inbound links survive the cutover — can
       only really be checked once this is deployed live (**needs your
       input**: this is a production-cutover verification, not a build-time
@@ -175,14 +177,17 @@ approved plan for full rationale on each decision referenced below.
 
 ## Infra / deployment
 
-- [ ] Wire Strapi into the Dokploy deployment alongside the Astro build —
-      **needs your input**: requires your Dokploy access
-- [ ] Decide build trigger: webhook on Strapi publish → CI rebuild, vs.
-      manual/scheduled rebuild — **needs your input**: your call, not an
-      engineering constraint either way
-- [ ] Update `Dockerfile`/`sws.toml` for the new build output (currently
-      Zola-specific) — holding off until the migration/cutover is actually
-      ready to ship, so this doesn't drift out of sync in the meantime
+- [x] Wire Strapi into the Dokploy deployment alongside the Astro build —
+      `docker-compose.prod.yml` defines both production services, persistent
+      CMS/Git volumes, reverse-proxy settings, and secret-only configuration
+- [x] Build trigger decided and implemented: Strapi commits Markdown and
+      generated covers to Git, pushes the production branch, then calls the
+      Dokploy Compose deploy webhook so Astro rebuilds from the durable commit
+- [x] Update `Dockerfile`/`sws.toml` for Astro's `apps/site/dist` output,
+      current security headers, legacy redirects, and the custom 404 page
+- [ ] Launch the production Compose application and configure its domains,
+      secrets, GitHub token, and deploy webhook in Dokploy — repository-side
+      setup is complete in `DEPLOYMENT.md`; host access is still required
 
 ## Cleanup
 

@@ -107,11 +107,12 @@ export function writeEntry(
   layout: "nested" | "flat",
   frontmatter: Record<string, unknown>,
   body: string,
-): void {
+): string {
   const file = entryPath(dir, slug, layout);
   mkdirSync(dirname(file), { recursive: true });
   const toml = stringifyToml(compact(frontmatter)).trimEnd();
   writeFileSync(file, `+++\n${toml}\n+++\n\n${(body ?? "").trim()}\n`);
+  return file;
 }
 
 /** Deletes the file (and, for nested layout, its now-empty directory) for `slug`. */
@@ -119,9 +120,10 @@ export function deleteEntry(
   dir: string,
   slug: string,
   layout: "nested" | "flat",
-): void {
+): string {
   const file = entryPath(dir, slug, layout);
   rmSync(file, { force: true });
   if (layout === "nested")
     rmSync(join(dir, slug), { recursive: true, force: true });
+  return file;
 }
